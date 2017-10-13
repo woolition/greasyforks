@@ -11,3 +11,10 @@ GitHub markdown 样式 			 | github.css
 代码高亮样式(默认的html,js,css)	 |prism.css
 代码高亮脚本						 |prism.js
 
+**浏览器原本打开效果**
+
+![浏览器原本打开效果](img/mdv.1.jpg)
+
+**启用脚本后打开效果**
+
+![启用脚本后打开效果](img/mdv.2.jpg)
