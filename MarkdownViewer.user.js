@@ -727,7 +727,9 @@
 }
 
 /*Markdown Viewer*/
-.markdown-body summary:hover { cursor: pointer; }
+.markdown-body summary:hover {
+	cursor: pointer; 
+}
 body {
   min-width: 900px;
   max-width: 900px;
