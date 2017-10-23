@@ -1,6 +1,6 @@
 # greasyforks 脚本介绍
 
-## Markdown Viewer
+## Markdown Viewer 
 
 MarkdownViewer.user.js 开发参考了:扩展[Markdown Viewer](https://chrome.google.com/webstore/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk)
 毕竟脚本体积太大不是好事,这里先推出第一个版本,整合了扩展 MarkdownViewer 扩展里面的
@@ -20,3 +20,10 @@ GitHub markdown 样式 			 | github.css
 **启用脚本后打开效果**
 
 ![启用脚本后打开效果](img/mdv.2.jpg)
+
+## Markdown Viewer Lite
+
+是 Markdown Viewer 的轻量化版本,就是把别人的代码挪出去,看起来不那么臃肿.
+最新的0.5版本里更新了一些功能.
+
+详情参见:[readme.md](/Markdown%20Viewer%20Lite/readme.md)
