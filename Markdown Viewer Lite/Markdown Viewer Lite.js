@@ -1,7 +1,7 @@
 // ==UserScript==
     // @name         Markdown Viewer Lite
     // @namespace    http://tampermonkey.net/
-    // @version      0.5
+    // @version      0.5.1
     // @description  view Markdown in Chrome,23 common language surportted
     // @require      https://cdn.staticfile.org/zepto/1.2.0/zepto.min.js
     // @require      https://greasyfork.org/scripts/34223-doccodestyle/code/docCodeStyle.js?version=225061
@@ -30,6 +30,8 @@
 
     // @author       黄盐
     // @match        file:///*md
+    // @match        file:///*markdown
+    // @match        file:///*mdown
     // @grant        GM_addStyle
     // @grant        GM_setValue
     // @grant        GM_getValue
