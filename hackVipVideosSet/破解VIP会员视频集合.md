@@ -19,9 +19,11 @@
 >方法②最好在电视剧[概览]找到直接播放页面地址。看↓↓↓下面图片解析。声明：纯属个人兴趣，资源来源于互联网，如果有侵犯到你利益的请留言，谢谢 ▃▉▔▉●
 
 ### 正确选集
+![正确选集](/img/正确选集.gif)
 #### [点我看图](http://orfuf97rs.bkt.clouddn.com/1.gif)  记得返回
 
 ### 本页解析使用
+![本页解析](/img/本页解析.gif)
 [点我看图](http://orfuf97rs.bkt.clouddn.com/2.gif)  记得返回
 
 
@@ -46,6 +48,7 @@
 >如果我就是不愿意动手指，怎么办？也可以，推荐[hoothin](https://greasyfork.org/zh-CN/users/8227-hoothin)的脚本咯，他的脚本有立即解析的选项。
 
 ### 历史版本
+
 >0.43版本地址：https://pan.baidu.com/s/1ctnw1g
 >1.0.5版本地址：https://pan.baidu.com/s/1eSCciQI
 >1.1.3版本地址：https://pan.baidu.com/s/1i5bvFcL
