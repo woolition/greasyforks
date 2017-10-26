@@ -19,10 +19,10 @@
 >方法②最好在电视剧[概览]找到直接播放页面地址。看↓↓↓下面图片解析。声明：纯属个人兴趣，资源来源于互联网，如果有侵犯到你利益的请留言，谢谢 ▃▉▔▉●
 
 ### 正确选集
-![正确选集](/img/正确选集.gif)
+![正确选集](https://github.com/woolition/greasyforks/raw/master/img/%E6%AD%A3%E7%A1%AE%E9%80%89%E9%9B%86.gif)
 
 ### 本页解析使用
-![本页解析](/img/本页解析.gif)
+![本页解析](https://github.com/woolition/greasyforks/raw/master/img/%E6%9C%AC%E9%A1%B5%E8%A7%A3%E6%9E%90.gif)
 
 
 ### 常见Q&A
@@ -58,4 +58,4 @@
 * 3.1.0版本地址：https://pan.baidu.com/s/1qXIVRQW
 
 ### 版本4.0功能使用
-![自定义解析接口](/img/破解VIP会员视频集合v4.0.jpg)
+![自定义解析接口](https://github.com/woolition/greasyforks/raw/master/img/%E7%A0%B4%E8%A7%A3VIP%E4%BC%9A%E5%91%98%E8%A7%86%E9%A2%91%E9%9B%86%E5%90%88v4.0.jpg)
