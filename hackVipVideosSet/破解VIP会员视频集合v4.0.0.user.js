@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         破解VIP会员视频集合
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      4.0.0
+// @version      4.0.1
 // @description  破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。有直接跳转＋备用接口列表。详细方法看说明还有图片。包含了[破解全网VIP视频会员-去广告▶ttmsjx][VIP会员视频解析▶龙轩][酷绘-破解VIP会员视频▶ahuiabc2003]以及[VIP视频破解▶hoothin]的部分接口。
 // @author       黄盐
 // @noframes
@@ -58,15 +58,15 @@
         .TM3 li:first-child{border-radius: 5px 5px 0 0;}
         .TM1:hover .TM3{display:block}
         /*2017-10-24 对应自定义解析接口部分*/
-        #tMuserDefine {display:none;width:600px;height:auto;background:rgba(190,215,66,1);padding:10px;border-radius:20px;text-align:center;position:fixed;left:20%;top:20%;font-size:16px;z-index:999999;}
-        #tMuserDefine li {margin:5px;width:100%;list-style-type:none;}
-        #tMuserDefine input[type="text"] {width:70%;height:30px;border:0;margin:0 10px;background:rgba(127,184,14,0.8);font-size:16px!important;color:white;font-weight:bold;border-radius:15px;}
-        #tMuserDefine button {background:#333;color:deepskyblue;border:0;border-radius:15px;width:20%;height:50px;font-size:25px!important;margin:5px;cursor:pointer;}
-        #tMuserDefine button:hover {background:#555;}
-        .ilink {width:80%;}
-        .idelete {width:20%;color:red;float:right;cursor:pointer;}
-        .iname {padding-right:10px;}
-        li:hover .idelete,li:hover .ilink,li:hover .iname {background:rgba(224,175,17,0.62);}
+		#tMuserDefine {display:none;width:500px;height:auto;background:rgba(255,255,0,1);padding:5px;border-radius:5px;text-align:center;position:fixed;left:20%;top:20%;font-size:16px;z-index:999999;}
+		#tMuserDefine li {margin:5px;width:100%;list-style-type:none;}
+		#tMuserDefine input[type="text"] {width:70%;height:30px;border:1px solid #3a3a3a;margin:0 10px;padding:0 5px;background:transparent;font-size:16px!important;color:#3a3a3a;border-radius:5px}
+		#tMuserDefine button {background:transparent;color:#3a3a3a;border:1px solid;border-radius:5px;width:20%;height:30px;margin:5px;cursor:pointer;}
+		#tMuserDefine button:hover {background:#555;color:yellow;border:0;}
+		.ilink {width:80%;}
+		.idelete {float: left;  display: inline-block; color: red; padding: 0 20px !important; cursor: pointer;}
+		.iname {padding-right:10px;}
+		li:hover .idelete,li:hover .ilink,li:hover .iname {background:rgba(224,175,17,0.62);}
     `);
     var apis =[
         {name:"vParse[腾]",url:"https://api.vparse.org/?url=",title:"支持腾讯"},
@@ -287,7 +287,7 @@
         try {
             if (ar[0].name !== undefined) {
                 for (var i = 0; i < ar.length; i++) {
-                    txt += `<li><span class="iname">${ar[i].name}</span><span class="ilink">${ar[i].link}</span><span class="idelete" title="删除" onclick="document.getElementById('tMuserDefine').removeChild(this.parentNode)">✘</span></li>`;
+                    txt += `<li><span class="idelete" title="删除" onclick="document.getElementById('tMuserDefine').removeChild(this.parentNode)">✘</span><span class="iname">${ar[i].name}</span><span class="ilink">${ar[i].link}</span></li>`;
                 }
             }
         } catch (e) {}
@@ -302,7 +302,7 @@
         q('#tMadd').addEventListener('click', function() {
             if (q('#tMname').value || q('#tMparseLink').value) {
                 var a = document.createElement('li');
-                a.innerHTML = `<span class="iname">${q('#tMname').value}:</span><span class="ilink">${q('#tMparseLink').value}</span><span class="idelete" title="删除" onclick="document.getElementById('tMuserDefine').removeChild(this.parentNode)">✘</span>`;
+                a.innerHTML = `<span class="idelete" title="删除" onclick="document.getElementById('tMuserDefine').removeChild(this.parentNode)">✘</span><span class="iname">${q('#tMname').value}:</span><span class="ilink">${q('#tMparseLink').value}</span>`;
                 if (q('span[class=iname]') === null) {
                     q('#tMuserDefine').appendChild(a);
                     q('#tMname').value = '';
