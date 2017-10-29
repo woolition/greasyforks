@@ -24,6 +24,6 @@ GitHub markdown 样式 			 | github.css
 ## Markdown Viewer Lite
 
 是 Markdown Viewer 的轻量化版本,就是把别人的代码挪出去,看起来不那么臃肿.
-最新的0.5版本里更新了一些功能.
+最新的0.5.2版本里更新了一些功能.快来点击这里:
 
-详情参见:[readme.md](/Markdown%20Viewer%20Lite/readme.md)
+### (→_→)☛:[readme.md](/Markdown%20Viewer%20Lite/readme.md)
