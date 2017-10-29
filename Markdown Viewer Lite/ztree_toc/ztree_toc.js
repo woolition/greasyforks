@@ -307,10 +307,18 @@ function factor(opts ,count,current) {
 						console.log('click root table of content');
 					}
 					if($.fn.ztree_toc.defaults.is_highlight_selected_line == true) {
-						$('#' + treeNode.id).css('color' ,'red').fadeOut("slow" ,function() {
-						    // Animation complete.
-							$(this).show().css('color','black');
-						});
+						
+						//$('#' + treeNode.id).css('color' ,'red').fadeOut("slow" ,function() {
+						//    // Animation complete.
+						//	$(this).show().css('color','black');
+						//});
+						//$('#' + treeNode.id).animate({color:'red'},500,'ease-out');
+						//$('#' + treeNode.id).css('color' ,'red').fadeOut("slow" ,function() {
+						//    // Animation complete.
+						//	$(this).show().css('color','black');
+						//});
+						$('#' + treeNode.id).addClass('blink');
+						setTimeout(()=>$('#' + treeNode.id).removeClass('blink'), 1000);
 					}
 				},
 				onRightClick: function(event, treeId, treeNode) {

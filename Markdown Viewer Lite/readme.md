@@ -18,7 +18,7 @@ Markdown Viewer, 见名知义,就是Markdown阅读器.
 *  Remark 的各种选项,这里不提供
 *  [emoji](https://github.com/emojione/emojione) 有,引用EmojiOne的
 *  scroll 记录滚动条位置,无,因为目前觉得没有太大用处
-*  TOC 生成目录,无,打算在后续版本加入
+*  TOC 有,采用[jQuery.zTree_Toc.js方案](https://github.com/woolition/i5ting_ztree_toc),做相应的调整,适应[zepto.js](http://zeptojs.com/)
 *   MathJax 数学公式转化,有,而且比插件的更加猛,因为这里自豪地采用了[KaTex](https://khan.github.io/KaTeX/)
 
 ## 使用
@@ -35,6 +35,11 @@ what's new,就不知道,what's more就有.
 因为本人极度不专业代码,这小小的脚本前后花了不少时间,当然,Bug肯定少不了.但是现在应该说是能够用了.而且,如果不是非常专业的用户的话,也应该够用了.使用后欢迎提意见,如果觉得合适,后续版本加入
 
 ## 功能添加打算
-1. 目录Toc
-2. 折线图,饼状图,柱状图等的解析功能
-3. 高级用户配置界面
+1. 折线图,饼状图,柱状图等的解析功能
+2. 高级用户配置界面
+
+## 版本更新
+V 0.5.2<br/>
+2017-10-29<br/>
+增加 自动目录(<b style="color:red;">T</b>able <b style="color:red;">O</b>f <b style="color:red;">C</b>ontent)功能.<br/>
+感谢项目 [jQuery.zTree_Toc.js](https://github.com/woolition/i5ting_ztree_toc)
