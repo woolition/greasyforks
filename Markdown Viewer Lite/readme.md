@@ -39,7 +39,8 @@ what's new,就不知道,what's more就有.
 2. 高级用户配置界面
 
 ## 版本更新
-V 0.5.2<br/>
-2017-10-29<br/>
-增加 自动目录(<b style="color:red;">T</b>able <b style="color:red;">O</b>f <b style="color:red;">C</b>ontent)功能.<br/>
-感谢项目 [jQuery.zTree_Toc.js](https://github.com/woolition/i5ting_ztree_toc)
+
+版本     | 日期        |  内容
+--------|-------------|---------------
+V 0.5.2 | 2017-10-29  | 增加 自动目录(<b style="color:red;">T</b>able <b style="color:red;">O</b>f <b style="color:red;">C</b>	ontent)功能. <br>感谢项目 [jQuery.zTree_Toc.js](https://github.com/woolition/i5ting_ztree_toc)<br/>
+V 0.6.0 | 2017-10-29  | 修正 Doc Theme CSS 呈现不正常问题
