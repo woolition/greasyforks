@@ -45,6 +45,10 @@
 >个人认为官方视频多数情况下要比第三方视频好，如果马上解析，这样非VIP视频也解析了，毕竟VIP视频相对少些，所以劳烦动动您金贵的手指，点一下鼠标啦。
 >如果我就是不愿意动手指，怎么办？也可以，推荐[hoothin](https://greasyfork.org/zh-CN/users/8227-hoothin)的脚本咯，他的脚本有立即解析的选项。
 
+### 版本4.0功能使用
+![自定义解析接口](https://github.com/woolition/greasyforks/raw/master/img/%E7%A0%B4%E8%A7%A3VIP%E4%BC%9A%E5%91%98%E8%A7%86%E9%A2%91%E9%9B%86%E5%90%88v4.0.jpg)
+
+
 ### 历史版本
 * 0.43版本地址：https://pan.baidu.com/s/1ctnw1g
 * 1.0.5版本地址：https://pan.baidu.com/s/1eSCciQI
@@ -57,5 +61,5 @@
 * 3.0.3版本地址：https://pan.baidu.com/s/1qYr1IsW
 * 3.1.0版本地址：https://pan.baidu.com/s/1qXIVRQW
 
-### 版本4.0功能使用
-![自定义解析接口](https://github.com/woolition/greasyforks/raw/master/img/%E7%A0%B4%E8%A7%A3VIP%E4%BC%9A%E5%91%98%E8%A7%86%E9%A2%91%E9%9B%86%E5%90%88v4.0.jpg)
+### 历史
+4.0.2	修复火狐56.0.2不显示问题(2017-11-2)
