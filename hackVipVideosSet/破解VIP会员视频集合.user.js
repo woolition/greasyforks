@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         破解VIP会员视频集合
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      4.0.1
+// @version      4.0.2
 // @description  破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。有直接跳转＋备用接口列表。详细方法看说明还有图片。包含了[破解全网VIP视频会员-去广告▶ttmsjx][VIP会员视频解析▶龙轩][酷绘-破解VIP会员视频▶ahuiabc2003]以及[VIP视频破解▶hoothin]的部分接口。
 // @author       黄盐
 // @noframes
@@ -37,12 +37,12 @@
     var tMscript = document.createElement('script');
     tMscript.innerText = `q = function(cssSelector){return document.querySelector(cssSelector);};qa = function(cssSelector){return document.querySelectorAll(cssSelector);};`;
     document.head.appendChild(tMscript);
-    q = function(cssSelector) {return document.querySelector(cssSelector);};
-    qa = function(cssSelector) {return document.querySelectorAll(cssSelector);};
+    window.q = function(cssSelector) {return document.querySelector(cssSelector);};
+    window.qa = function(cssSelector) {return document.querySelectorAll(cssSelector);};
     var replaceRaw = GM_getValue("replaceRaw");
     var episodes = GM_getValue("episodes");
-    GM_getValue('userApis') === undefined ? GM_setValue('userApis', [{}]) : null;
-    GM_getValue('userApisOn') === undefined ? GM_setValue('userApisOn', false) : null;
+    if(GM_getValue('userApis') === undefined)GM_setValue('userApis', [{}]);
+    if(GM_getValue('userApisOn') === undefined)GM_setValue('userApisOn', false) ;
     GM_addStyle(`
         #TManays{z-index:999999; position:absolute; left:0px; top:0px; width:100px; height:auto; border:0; margin:0;}
         #TMiframe{position:absolute;}
@@ -58,15 +58,15 @@
         .TM3 li:first-child{border-radius: 5px 5px 0 0;}
         .TM1:hover .TM3{display:block}
         /*2017-10-24 对应自定义解析接口部分*/
-		#tMuserDefine {display:none;width:500px;height:auto;background:rgba(255,255,0,1);padding:5px;border-radius:5px;text-align:center;position:fixed;left:20%;top:20%;font-size:16px;z-index:999999;}
-		#tMuserDefine li {margin:5px;width:100%;list-style-type:none;}
-		#tMuserDefine input[type="text"] {width:70%;height:30px;border:1px solid #3a3a3a;margin:0 10px;padding:0 5px;background:transparent;font-size:16px!important;color:#3a3a3a;border-radius:5px}
-		#tMuserDefine button {background:transparent;color:#3a3a3a;border:1px solid;border-radius:5px;width:20%;height:30px;margin:5px;cursor:pointer;}
-		#tMuserDefine button:hover {background:#555;color:yellow;border:0;}
-		.ilink {width:80%;}
-		.idelete {float: left;  display: inline-block; color: red; padding: 0 20px !important; cursor: pointer;}
-		.iname {padding-right:10px;}
-		li:hover .idelete,li:hover .ilink,li:hover .iname {background:rgba(224,175,17,0.62);}
+        #tMuserDefine {display:none;width:500px;height:auto;background:rgba(255,255,0,1);padding:5px;border-radius:5px;text-align:center;position:fixed;left:20%;top:20%;font-size:16px;z-index:999999;}
+        #tMuserDefine li {margin:5px;width:100%;list-style-type:none;}
+        #tMuserDefine input[type="text"] {width:70%;height:30px;border:1px solid #3a3a3a;margin:0 10px;padding:0 5px;background:transparent;font-size:16px!important;color:#3a3a3a;border-radius:5px}
+        #tMuserDefine button {background:transparent;color:#3a3a3a;border:1px solid;border-radius:5px;width:20%;height:30px;margin:5px;cursor:pointer;}
+        #tMuserDefine button:hover {background:#555;color:yellow;border:0;}
+        .ilink {width:80%;}
+        .idelete {float: left;  display: inline-block; color: red; padding: 0 20px !important; cursor: pointer;}
+        .iname {padding-right:10px;}
+        li:hover .idelete,li:hover .ilink,li:hover .iname {background:rgba(224,175,17,0.62);}
     `);
     var apis =[
         {name:"vParse[腾]",url:"https://api.vparse.org/?url=",title:"支持腾讯"},
@@ -259,7 +259,7 @@
     ┃                    ┃
     ┗━┓            ┏━┛
         ┃            ┃      未启用[增加接口]功能
-        ┃            ┃      请把 '☑增加接口'' 前面对应的' ▣ ' 选项勾上 !
+        ┃            ┃      请把 '☑增加接口'' 的' ▣ ' 选项勾上 !
         ┃            ┗━━━┓
         ┃                    ┣┓
         ┃                    ┏┛
