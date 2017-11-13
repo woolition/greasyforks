@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         破解VIP会员视频集合
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      4.1.0
+// @version      4.1.1
 // @description  破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。有直接跳转＋备用接口列表。详细方法看说明还有图片。包含了[破解全网VIP视频会员-去广告▶ttmsjx][VIP会员视频解析▶龙轩][酷绘-破解VIP会员视频▶ahuiabc2003]以及[VIP视频破解▶hoothin]的部分接口。
 // @author       黄盐
 // @noframes
@@ -95,7 +95,6 @@
         {name:"猫云[腾]",url:"https://jx.maoyun.tv/index.php?id=",title:"支持腾讯",intab:1},
         //{name:"FLVSP[腾讯]",url:"https://api.flvsp.com/?url=",title:"支持腾讯",intab:1},//解析源同上
         {name:"噗噗电影",url:"http://pupudy.com/play?make=url&id=",title:"综合接口，破解全网VIP视频会员-去广告【作者ttmsjx】脚本的接口",intab:0},
-        {name:"PU.tn",url:"http://api.pu.tn/qq1/?url=",title:"据说可以看优酷布袋游戏",intab:0},
         {name:"酷绘",url:"http://appapi.svipv.kuuhui.com/svipjx/liulanqichajian/browserplugin/qhjx/qhjx.php?id=",title:"综合接口，酷绘*【作者ahuiabc2003】脚本的接口",intab:0},
         {name:"百域阁",url:"http://api.baiyug.cn/vip/index.php?url=",title:"转圈圈就换线路",intab:1},
         {name:"旋风解析",url:"http://api.xfsub.com/index.php?url=",title:"1905优先使用",intab:1},
@@ -109,7 +108,7 @@
         {name:"无名小站2",url:"http://www.wmxz.wang/video.php?url=",title:"转圈圈就换线路",intab:1},
         {name:"眼睛会下雨",url:"http://www.vipjiexi.com/yun.php?url=",title:"www.vipjiexi.com",intab:1},
         {name:"1008影视",url:"http://api.1008net.com/v.php?url=",title:"据说可以看布袋游戏视频",intab:1},
-        {name:"人人发布",url:"http://v.renrenfabu.com/jiexi.php?url=",title:"综合，多线路",intab:1}
+        {name:"人人发布",url:"http://v.renrenfabu.com/jiexi.php?url=",title:"综合，多线路",intab:0}
     ];
     //嵌入页面播放
     function openInTab(evt) {
@@ -398,6 +397,7 @@
 //href="http://mt2t.com/yun?url=
 //https://api.47ks.com/webcloud/?v=
 //http://www.guqiankun.com/tools/vipvideo
+//{name:"PU.tn",url:"http://api.pu.tn/qq1/?url=",title:"据说可以看优酷布袋游戏",intab:0},
 //过期接口
 //{name:"65YW",url:"http://www.65yw.com/65yw/?vid=",title:"新接口，稳定性未知"},
 //{name:"紫狐",url:"http://yun.zihu.tv/play.html?url=",title:"效果可能不稳定"},
