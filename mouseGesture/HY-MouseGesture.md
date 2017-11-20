@@ -1,6 +1,5 @@
-
 ## HY-MouseGesture  (鼠标手势) ##
-> [作者: 黄盐](https://github.com/woolition/greasyforks) `2017-11-21`
+> [作者: 黄盐](https://github.com/woolition/greasyforks)   Tue Nov 21 2017 06:12:27 GMT+0800 (澳大利亚西部标准时间)
 
 
 ----------
@@ -39,6 +38,8 @@
 > **提示文字背景颜色**
 
 > **新标签在前台**
+
+> **图片搜索引擎**
 
 > **启用拖拽文字**
 
