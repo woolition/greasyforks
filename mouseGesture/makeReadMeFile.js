@@ -218,7 +218,7 @@ function makeReadMeFile() {
     }
 
     txt += `----------\n## 右键画 **S** 轨迹,进入设置\n\n![进入设置](https://github.com/woolition/greasyforks/raw/master/img/mouseGesture.gif)`;
-    txt += `----------\n## 更新历史\n\n`;
+    txt += `\n\n----------\n## 更新历史\n\n`;
     txt += `
 ### V 1.1  [2017-11-21]
 - 修正 GitHub 不能拖拽

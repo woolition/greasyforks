@@ -61,7 +61,9 @@
 ----------
 ## 右键画 **S** 轨迹,进入设置
 
-![进入设置](https://github.com/woolition/greasyforks/raw/master/img/mouseGesture.gif)----------
+![进入设置](https://github.com/woolition/greasyforks/raw/master/img/mouseGesture.gif)
+
+----------
 ## 更新历史
 
 
