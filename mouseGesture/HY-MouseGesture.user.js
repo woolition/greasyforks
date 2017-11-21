@@ -3,7 +3,7 @@
 // @name:zh-CN         鼠标手势
 // @description        HY's mouse gesture script,supports ringt-key draw track functions and left-key drag functions.Drag target can be [Text] & [Links] & [Image]  Customizenable → Right click to draw 'S' to costomize, track:ULDRDLU
 // @description:zh-CN  鼠标手势脚本,支持右键轨迹手势和左键拖拽功能.可以拖拽[文本],[链接]和[图片],支持自定义设置:鼠标画S形,路径 ULDRDLU
-// @version            1.0
+// @version            1.1
 // @include            *
 // @noframes
 // @run-at             document-start
@@ -21,7 +21,8 @@
 
 
 const MouseGesture = (function() {
-    let MG = {};
+    // let MG = {};
+    this.MG = {};
     let defaultTrack2name = {
             U: "toTop",
             D: "toBottom",
@@ -51,8 +52,10 @@ const MouseGesture = (function() {
             lineGrowth: 0.6,
             maxLineWidth: 10,
             lineColor: '00AAA0',
-            // tips div.style.background
-            tipsBackground: "00000055",
+            //tips setting
+            fontSize: 50,//tips font size
+            tipsBackground: "00000055",//div background
+            funNotDefine: "  (◔ ‸◔)？",//function not define tips
             //language 0:Chinese 1:English
             language: 1,
             SENSITIVITY: 10, // minLength
@@ -209,7 +212,7 @@ const MouseGesture = (function() {
             //GreasyMonkdy:
             // GM_openInTab(GM_getValue('latestTab'),false);
             //TamperMonkey:
-            GM_openInTab(GM_getValue('latestTab'), {
+            GM_openInTab(GM_getValue('latestTab','about:blank'), {
                 active: true
             });
         },
@@ -250,10 +253,10 @@ const MouseGesture = (function() {
             let txt = window.getSelection().toString();
             txt = encodeURIComponent(txt);
             //get search enging
-            openURL = MG.config.searchEnging.replace(/%s/, txt);
+            openURL = MG.config.searchEnging.replace(/%s/, txt) || defaultConfig.config.searchEnging.replace(/%s/, txt);
             // openURL = searchEnging.replace(/%s/,txt);
             GM_openInTab(openURL, {
-                active: MG.config.notBackground
+                active: MG.config.notBackground || defaultConfig.config.notBackground
             });
         },
         copySelectedText: function() {
@@ -410,7 +413,8 @@ const MouseGesture = (function() {
         left: 50% !important;
         transform: translate(-50%, -50%) !important;
         font-family: "Orkney Regular", "Arial", sans-serif !important;
-        font-size: 50px !important;
+        /*font-size: 50px !important;*/
+        font-size: ${MG.config.fontSize  || defaultConfig.fontSize}px !important;
         color:white !important;
         white-space: nowrap !important;
         line-height: normal !important;
@@ -419,7 +423,7 @@ const MouseGesture = (function() {
         padding: 25px 20px 20px 20px !important;
         border-radius: 5px !important;
         font-weight: bold !important;
-        background:#${MG.config.tipsBackground} !important;
+        background:#${MG.config.tipsBackground || defaultConfig.tipsBackground} !important;
     `;
 
     let x, y, track = "",
@@ -429,7 +433,8 @@ const MouseGesture = (function() {
     MG.dragObject = {};
     // when a gesture is not define, show this tips
     function showGestureNotDefineTips() {
-        MG.tips.innerHTML = symbolTrack + '<br/>  (◔ ‸◔)？';
+        MG.tips.innerHTML = symbolTrack + '<br/>'+(MG.config.funNotDefine || defaultConfig.funNotDefine);
+        // MG.tips.innerHTML = symbolTrack + '<br/>  (◔ ‸◔)？';
     }
 
     const tracer = function(e) {
@@ -502,6 +507,7 @@ const MouseGesture = (function() {
         //draw track on canvas
         if (flag.hascanvas) {
             MG.ctx.lineWidth = Math.min(MG.config.maxLineWidth, MG.ctx.lineWidth += MG.config.lineGrowth);
+            console.log(MG.ctx.lineWidth);
             MG.ctx.beginPath();
             MG.ctx.moveTo(x, y);
             MG.ctx.lineTo(e.clientX, e.clientY);
@@ -581,20 +587,20 @@ const MouseGesture = (function() {
         flag.isDrag = true;
         flag.actionType = "drag";
         processDrag(e);
-        // console.log(MG.dragObject);
+        console.log(MG.dragObject);
         window.addEventListener('drag', tracer, false);
         //避免释放鼠标时候,坐标跑到(0,0) window.allowDrop
-        this.allowDrop = function(ev) {
-            ev.preventDefault();
+        this.allowDrop = function(event) {
+            event.preventDefault();
         };
-        MG.tips.setAttribute("ondragover", "allowDrop(event)");
-        MG.canvas.setAttribute("ondragover", "allowDrop(event)");
+        MG.tips.addEventListener("dragover", allowDrop, false);
+        MG.canvas.addEventListener("dragover", allowDrop, false);
     }, false);
 
     window.addEventListener('dragend', function(e) {
         window.removeEventListener('drag', tracer, false);
-        MG.tips.setAttribute("ondragover", "");
-        MG.canvas.setAttribute("ondragover", "");
+        MG.tips.removeEventListener("dragover", allowDrop, false);
+        MG.canvas.removeEventListener("dragover", allowDrop, false);
         reset();
         isDrag = false;
         if (track !== "") {
@@ -734,30 +740,48 @@ const MouseGesture = (function() {
                 type: '2'
             },
             maxLineWidth: {
-                item: ['线条宽度', 'Line Width'],
+                item: ['轨迹宽度', 'Line Width'],
                 description: ['鼠标轨迹最大宽度,单位"px"'],
                 data: {
                     type: 'input',
                     name: 'maxLineWidth',
-                    more: ''
+                    more: 'num'
                 }
             },
             lineGrowth: {
-                item: ["线条宽度", 'Line Grow'],
+                item: ["轨迹增长", 'Line Grow'],
                 description: ['轨迹增长速度,单位"px"'],
                 data: {
                     type: 'input',
                     name: 'lineGrowth',
-                    more: ''
+                    more: 'num'
+                }
+            },
+            fontSize: {
+                item: ["提示字体大小", 'Tips Font Size'],
+                description: ['功能提示字体的大小,单位"px"'],
+                data: {
+                    type: 'input',
+                    name: 'fontSize',
+                    more: 'num'
                 }
             },
             lineColor: {
-                item: ["线条颜色", 'Line Color'],
+                item: ["轨迹颜色", 'Line Color'],
                 description: ['允许3|6|8位16进值,如 0f0 或 00ff00 都表示绿色,8位值后2位表示透明度'],
                 data: {
                     type: 'input',
                     name: 'lineColor',
                     more: 'color'
+                }
+            },
+            funNotDefine: {
+                item: ["未定义提示", 'Not Define Tips'],
+                description: ['手势或者功能未定义时的提示信息'],
+                data: {
+                    type: 'input',
+                    name: 'funNotDefine',
+                    more: ''
                 }
             },
             language: {
@@ -766,7 +790,7 @@ const MouseGesture = (function() {
                 data: {
                     type: 'input',
                     name: 'language',
-                    more: ''
+                    more: 'num'
                 }
             },
             SENSITIVITY: {
@@ -775,7 +799,7 @@ const MouseGesture = (function() {
                 data: {
                     type: 'input',
                     name: 'SENSITIVITY',
-                    more: ''
+                    more: 'num'
                 }
             },
             tipsBackground: {
@@ -904,15 +928,17 @@ const MouseGesture = (function() {
             } else {
                 if (setting[i].data.type === 'input') {
                     if (setting[i].data.more === 'color') {
-                        span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,MG.config[setting[i].data.name])}" style="background:#${GM_getValue(setting[i].data.name,MG.config[setting[i].data.name])};"  onblur="setConfig(event)" data-mark="color">`;
+                        span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,MG.config[setting[i].data.name] || defaultConfig[setting[i].data.name])}" style="background:#${GM_getValue(setting[i].data.name,MG.config[setting[i].data.name])};"  data-mark="color">`;
+                    } else if(setting[i].data.more === 'num'){
+                        span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,MG.config[setting[i].data.name] || defaultConfig[setting[i].data.name])}" data-mark="num">`;
                     } else {
-                        span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,MG.config[setting[i].data.name])}" onblur="setConfig(event)" data-mark="normal">`;
+                        span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,MG.config[setting[i].data.name] || defaultConfig[setting[i].data.name])}" data-mark="normal">`;
                     }
                 } else {
                     isChecked = GM_getValue(setting[i].data.name, MG.config[setting[i].data.name]) ? 'checked' : '';
                     isOn = GM_getValue(setting[i].data.name, MG.config[setting[i].data.name]) ? 'style = "background:yellowgreen;"' : 'style = "background:gray;"';
                     // console.log(isOn);
-                    span = `<label for="${setting[i].data.name}" ${isOn}><input type="checkbox" id="${setting[i].data.name}" onchange="onOff(event)"  ${isChecked}></label>`;
+                    span = `<label for="${setting[i].data.name}" ${isOn}><input type="checkbox" id="${setting[i].data.name}"  ${isChecked}></label>`;
 
                 }
                 txt += `<li><span>${setting[i].item[0]}</span><span>${setting[i].description[0]}</span><span>${span}</span></li>`;
@@ -945,7 +971,7 @@ const MouseGesture = (function() {
                         t = j;
                     }
                 }
-                tt += `<li><span>${i}</span><span>${fn[type][i][MG.config.language]}</span><span><input type="text" name="${i}" value="${letter2arrow(t)}" onkeyup="this.value=letter2arrow(this.value)" onblur="setConfig(event)" data-mark="${type}" data-track="${t}"></span></li>`;
+                tt += `<li><span>${i}</span><span>${fn[type][i][MG.config.language]}</span><span><input type="text" name="${i}" value="${letter2arrow(t)}" data-mark="${type}"></span></li>`;
             }
             return tt;
         }
@@ -996,6 +1022,24 @@ const MouseGesture = (function() {
                     GM_setValue('config', MG.config);
                     e.target.style.background = '#' + e.target.value;
                     break;
+                case 'num':
+                    let b;
+                    switch (e.target.name) {
+                        case 'language':
+                            b = (e.target.value == 1 || e.target.value == 0) ? e.target.value : MG.config[e.target.name];
+                            break;
+                        case 'SENSITIVITY':
+                        case 'fontSize':
+                            b = parseInt(e.target.value);
+                            break;
+                        default:
+                            b = parseFloat(parseFloat(e.target.value).toFixed(2));
+                            break;
+                    }
+                    MG.config[e.target.name] = b;
+                    GM_setValue('config', MG.config);
+                    e.target.style.background = '#' + e.target.value;
+                    break;
                 case 'normal':
                     MG.config[e.target.name] = e.target.value;
                     console.log(MG.config[e.target.name]);
@@ -1034,15 +1078,29 @@ const MouseGesture = (function() {
             }
         };
         [].forEach.call(document.querySelectorAll('#MGmenu li'), function(item) {
-            item.setAttribute('onclick', 'selected(event)');
+            item.addEventListener('click', selected, false);
+        });
+        [].forEach.call(document.querySelectorAll('#HYMGSetting input[type=text]'), function(item) {
+            item.addEventListener('blur', setConfig, false);
+        });
+        [].forEach.call(document.querySelectorAll('#HYMGSetting input[data-mark*=drag],#HYMGSetting input[data-mark=gesture]'), function(item) {
+            item.addEventListener('keyup', function(event) {
+                event.target.value = letter2arrow(event.target.value);
+            }, false);
+        });
+        [].forEach.call(document.querySelectorAll('#HYMGSetting input[type=checkbox]'), function(item) {
+            item.addEventListener('change', onOff, false);
         });
         //init
         [].forEach.call(document.querySelectorAll('.HYMGcontent'), function(item) {
             item.style.display = "none";
         });
         document.getElementById('mg1').style.display = 'block';
-        document.getElementById('MGClose').setAttribute('onclick', 'document.documentElement.removeChild(document.getElementById("HYMGSetting"))');
+        document.getElementById('MGClose').addEventListener('click', function() {
+            document.documentElement.removeChild(document.getElementById("HYMGSetting"));
+        }, false);
 
     }
+    return MG;
 
 })();

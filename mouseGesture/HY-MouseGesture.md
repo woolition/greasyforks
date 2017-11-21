@@ -1,5 +1,5 @@
 ## HY-MouseGesture  (鼠标手势) ##
-> [作者: 黄盐](https://github.com/woolition/greasyforks)   Tue Nov 21 2017 06:12:27 GMT+0800 (澳大利亚西部标准时间)
+> [作者: 黄盐](https://github.com/woolition/greasyforks)   Wed Nov 22 2017 03:58:30 GMT+0800 (澳大利亚西部标准时间)
 
 
 ----------
@@ -22,14 +22,19 @@
 
   **`保存图片`**    **`搜索图片`**    **`复制图片`**    **`复制图片链接`**    **`新标签打开图片`**    **`复制图片为DataURL`**    **`选中图片`**
 
+
 ----------
 ## 可配置选项
 
-> **线条宽度**
+> **轨迹宽度**
 
-> **线条宽度**
+> **轨迹增长**
 
-> **线条颜色**
+> **提示字体大小**
+
+> **轨迹颜色**
+
+> **未定义提示**
 
 > **语言**
 
@@ -56,4 +61,21 @@
 ----------
 ## 右键画 **S** 轨迹,进入设置
 
-![进入设置](https://github.com/woolition/greasyforks/raw/master/img/mouseGesture.gif)
+![进入设置](https://github.com/woolition/greasyforks/raw/master/img/mouseGesture.gif)----------
+## 更新历史
+
+
+### V 1.1  [2017-11-21]
+- 修正 GitHub 不能拖拽
+
+`Chrome console:`
+
+    Refused to execute inline event handler because it violates the following Content Security Policy directive: "script-src 'unsafe-eval' assets-cdn.github.com". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution.
+
+`fixed:`
+
+    MG.canvas.setAttribute("ondragover", "allowDrop(event)");
+    ↓↓↓↓↓
+    MG.canvas.addEventListener("dragover", allowDrop, false);
+
+- 增加了部分设置
