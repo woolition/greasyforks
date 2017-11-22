@@ -3,6 +3,7 @@ let fn = {
     gesture: {
         stopLoading: ['停止加载', 'StopLoading'],
         reload: ['刷新', 'Refresh'],
+        reloadWithoutCache: ['清缓存刷新', 'Refresh Without Cache'],
         close: ['关闭', 'Close'],
         back: ['后退', 'Back'],
         forward: ['前进', 'Forward'],
@@ -11,8 +12,10 @@ let fn = {
         reopenLatestCloseTab: ['打开最近关闭窗口', 'Reopen Latest Closed Window'],
         setting: ['设置', 'Settings'],
         URLLevelUp: ['网址向上一层', 'URL hierarchy up'],
-        cloneTab: ['克隆标签页', 'Duplicate tab'],
+        cloneTab: ['克隆标签页', 'Duplicate This Tab'],
         openBlankTab: ['打开空白页', 'Open New Blank Tab'],
+        translate: ['翻译网页', 'Translate This Page'],
+        fkVip: ['破解VIP视频', 'Crack to Watch VIP Video']
     },
     dragText: {
         searchSelectedText: ['搜索选中文本', 'Search Selected Text'],
@@ -20,7 +23,8 @@ let fn = {
     },
     dragLink: {
         openLink: ['打开链接', 'Open Link'],
-        copyLink: ['复制链接', 'Copy Link']
+        copyLink: ['复制链接', 'Copy Link'],
+        copyLinkText: ['复制链接文字', 'Copy Link Text']
     },
     dragImg: {
         saveImg: ['保存图片', 'Save Image'],
@@ -70,7 +74,7 @@ let setting = {
     },
     lineColor: {
         item: ["轨迹颜色", 'Line Color'],
-        description: ['允许3|6|8位16进值,如 0f0 或 00ff00 都表示绿色,8位值后2位表示透明度'],
+        description: ['允许3或6位16进制值,如 0f0 或 00ff00 都表示绿色'],
         data: {
             type: 'input',
             name: 'lineColor',
@@ -95,12 +99,12 @@ let setting = {
             more: 'num'
         }
     },
-    SENSITIVITY: {
+    sensitivity: {
         item: ["识别距离", 'Sensitivigy'],
         description: ['方向变化计算距离'],
         data: {
             type: 'input',
-            name: 'SENSITIVITY',
+            name: 'sensitivity',
             more: 'num'
         }
     },
@@ -111,6 +115,33 @@ let setting = {
             type: 'input',
             name: 'tipsBackground',
             more: 'color'
+        }
+    },
+    translateTo: {
+        item: ["目标语言", 'Language'],
+        description: ['要翻译成的语言'],
+        data: {
+            type: 'select',
+            name: 'translateTo',
+            more: ''
+        }
+    },
+    vipApi: {
+        item: ["破解视频接口", 'Parse Video API'],
+        description: ['VIP视频及杰解析接口'],
+        data: {
+            type: 'input',
+            name: 'vipApi',
+            more: ''
+        }
+    },
+    translateTimeout: {
+        item: ["等待时间", 'Timeout'],
+        description: ['翻译等待时间,超时作废'],
+        data: {
+            type: 'input',
+            name: 'translateTimeout',
+            more: ''
         }
     },
     mg1title2: {
@@ -126,11 +157,20 @@ let setting = {
             more: ''
         }
     },
+    searchEnging: {
+        item: ["文字搜索引擎", 'Search Enging'],
+        description: ['搜索文字的引擎'],
+        data: {
+            type: 'select',
+            name: 'searchEnging',
+            more: ''
+        }
+    },
     imgSearchEnging: {
         item: ["图片搜索引擎", 'Image Search Enging'],
         description: ['用 %URL 代替 图片'],
         data: {
-            type: 'input',
+            type: 'select',
             name: 'imgSearchEnging',
             more: ''
         }
@@ -197,8 +237,36 @@ let setting = {
 //=======================
 //把脚本内容加到 主脚本的最后,即可生成相应的ReadMe文件
 function makeReadMeFile() {
-    var txt = `## HY-MouseGesture  (鼠标手势) ##\n> [作者: 黄盐](https://github.com/woolition/greasyforks)   ${Date()} \n\n
-----------\n\n## 功能\n\n`;
+    var txt = `
+# MouseGesture--That's the way to DRAG
+# 鼠标手势--就是这么拽!
+> [作者: 黄盐](https://github.com/woolition/greasyforks)   ${Date()}
+
+----------
+
+#### 如果安装更新后,不能用了怎么办  (ヾﾉ꒪ཫ꒪)
+#### ① (●￣(ｴ)￣●)づ  删除脚本,重新安装即可.
+#### ②(●￣(ｴ)￣●)づ   清除存储数据,刷新网页即可.
+
+----------
+
+## 本次更新V 1.2   [2017-11-23]
+
+- 增加了部分新功能,其中有两个重要的是 **\`翻译网页\`**  和 **\`破解VIP视频\`**.
+
+    微软翻译,体验极好!
+
+    破解VIP视频,支持自定义接口,观看视频倍儿爽!
+
+- 更多的自定义选项
+
+- 优化轨迹,优化代码
+
+----------
+
+## 功能
+
+`;
     for (j in fn) {
         //  console.log(j);
         txt += '>' + j + '\n\n';
