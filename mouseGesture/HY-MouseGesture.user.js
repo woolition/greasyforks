@@ -68,7 +68,7 @@ const MouseGesture = (function() {
             notBackground: 1,
             translateTo: 'zh-CHS',
             translateTimeout: 5,
-            vipApi: 'https://api.vparse.org/?url=',
+            vipApi: 'http://goudidiao.com/?url=',
             zoom: 2,
             //drag config
             dragType: "",
@@ -221,7 +221,8 @@ const MouseGesture = (function() {
         },
         //use MicrosoftTranslator to translate the page
         fkVip: function() {
-            GM_openInTab(cfg.vipApi+location.href, {active:true});
+            // window.open((cfg.vipApi || _cfg.vipApi)+location.href,'_blank');
+            GM_openInTab((cfg.vipApi || _cfg.vipApi)+location.href, {active:true});
         },
 
         /*
