@@ -1,9 +1,10 @@
 // ==UserScript==
-// @name               MouseGesture--That's the way to DRAG
+// @name               MouseGesture-That's the way to DRAG
 // @name:zh-CN         鼠标手势--就是这么拽!
-// @description        HY's mouse gesture script,supports ringt-key draw track functions and left-key drag functions.Drag target can be [Text] & [Links] & [Image]  Customizenable → Right click to draw 'S' to costomize, track:ULDRDLU
-// @description:zh-CN  鼠标手势脚本,就是这么拽:支持右键轨迹手势和左键拖拽功能.可以拖拽[文本],[链接]和[图片],支持自定义设置:鼠标画S形,路径 ULDRDLU
-// @version            1.2
+// @namespace          https://greasyfork.org/users/104201
+// @description        HY's mouse gesture script,supports ringt-key draw track functions and left-key drag functions.Drag target can be [Text] & [Links] & [Image]  Customizenable → Right click to draw ⇄(left,right) to setting
+// @description:zh-CN  鼠标手势脚本,就是这么拽:支持右键轨迹手势和左键拖拽功能.可以拖拽[文本],[链接]和[图片],支持自定义设置:鼠标画⇄(右左)路径,进入设置
+// @version            1.3
 // @include            *
 // @noframes
 // @run-at             document-end
@@ -13,44 +14,54 @@
 // @grant              GM_getValue
 // @grant              GM_setClipboard
 // @grant              GM_download
+// @grant              GM_addValueChangeListener
+// @grant              GM_notification
 // @grant              window.close
-// @namespace          https://greasyfork.org/users/104201
+// @grant              GM_getResourceText
+// @grant              GM_xmlhttpRequest
 // Thanks to: Peer Zeng's script:  https://greasyfork.org/zh-CN/scripts/4776-my-mouse-gestures [no License] [for right click gesture handle]
 // Thanks to: crxMouse Chrome™ Gestures [chrome crxID:jlgkpaicikihijadgifklkbpdajbkhjo] [for: drag processing]
 // Thanks to: Robbendebiene's project Gesturefy [https://github.com/Robbendebiene/Gesturefy] [for canvas line style]
+// Thanks to: Jim Lin's userscript 有道划词翻译 [https://greasyfork.org/zh-CN/scripts/15844] [License MIT][for 划词翻译]
 // ==/UserScript==
 /* jshint esversion: 6 */
 
 const MouseGesture = (function() {
     let dObj = {};// the Object Element being draged
-    let x, y, startX, startY, screenX, screenY,
+    let x, y, startX, startY, screenX, screenY, canvas, tips, ctx,
      track = "", symbol = '', symbolTrack = '';
 
-    //_*:  default values <==> _t2n : t2n default values
-    let _t2n = {
+    //_*:  default cfg values
+    let _cfg = {
+        // t2n: track <==> function name
+        t2n:{
             U: "toTop",
             D: "toBottom",
             L: "back",
             R: "forward",
             DR: "close",
             LU: "reopenLatestCloseTab",
-            ULDRDLU: 'setting'
+            RL: 'setting'
         },
-        _dt2n = {
+        //dt2n: dragText <==> function name
+        dt2n: {
             L: "copySelectedText",
             R: "searchSelectedText"
         },
-        _dl2n = {
+        //dl2n: drag link <==> function name
+        dl2n: {
             R: 'openLink',
             L: 'copyLink'
         },
-        _di2n = {
+        //li2n: drag image <==> function
+        di2n: {
             D: 'saveImg',
             R: 'searchImg',
             U: 'copyImgURL',
             L: 'selectTheImage'
         },
-        _cfg = {
+        // configuration
+        usr:{
             //canvas setting
             minLineWidth: 1,
             lineGrowth: 0.6,
@@ -85,20 +96,15 @@ const MouseGesture = (function() {
             isImgSearchTabActive: true,
             // image searching enging
             imgSearchEnging: 'https://image.baidu.com/n/pc_search?queryImageUrl=%URL&uptype=urlsearch'
-        };
-
-    let t2n = GM_getValue('t2n', _t2n),// t2n: track <==> function name
-        //dragType = "text"
-        dt2n = GM_getValue('dt2n', _dt2n),//dt2n: dragText <==> function name
-        //dragType = "link"
-        dl2n = GM_getValue('dl2n', _dl2n),//dl2n: drag link <==> function name
-        //dragType = "img"
-        di2n = GM_getValue('di2n', _di2n),//li2n: drag image <==> function
-        cfg = GM_getValue('cfg', _cfg);// configuration
+        }
+    };
+    let cfg = GM_getValue('cfg', _cfg);
 
     //function name <==> tips
     let fn = {
-        gesture: {
+        // gesture
+        t2n: {
+        // gesture: {
             stopLoading: ['停止加载', 'StopLoading'],
             reload: ['刷新', 'Refresh'],
             reloadWithoutCache: ['清缓存刷新', 'Refresh Without Cache'],
@@ -113,18 +119,20 @@ const MouseGesture = (function() {
             cloneTab: ['克隆标签页', 'Duplicate This Tab'],
             openBlankTab: ['打开空白页', 'Open New Blank Tab'],
             translate: ['翻译网页', 'Translate This Page'],
-            fkVip: ['破解VIP视频', 'Crack to Watch VIP Video']
+            fkVip: ['破解VIP视频', 'Crack to Watch VIP Video'],
+            closeOtherTabs: ['关闭其他标签', 'Close Other Tabs'],
+            selectAndTranslateOn: ['开启划词翻译', 'Turn on Select And Translate']
         },
-        dragText: {
+        dt2n: {
             searchSelectedText: ['搜索选中文本', 'Search Selected Text'],
             copySelectedText: ['复制选中文本', 'Copy Selected Text']
         },
-        dragLink: {
+        dl2n: {
             openLink: ['打开链接', 'Open Link'],
             copyLink: ['复制链接', 'Copy Link'],
             copyLinkText: ['复制链接文字', 'Copy Link Text']
         },
-        dragImg: {
+        di2n: {
             saveImg: ['保存图片', 'Save Image'],
             searchImg: ['搜索图片', 'Search Image'],
             copyImage: ['复制图片', 'Copy Image to ClickBoard'],
@@ -193,8 +201,9 @@ const MouseGesture = (function() {
             if (typeof Microsoft === 'undefined' || typeof Microsoft.Translator === 'undefined') {
                 let d = document.createElement('div');
                 d.id = "MicrosoftTranslatorWidget";
-                d.style.cssText = 'color:white;background-color:#555555;position:absolute;right:0;bottom:0;';
+                d.style.cssText = 'visibility:hidden;';
                 d.setAttribute('class', 'Lignt');
+                // let src =
                 let s = document.createElement('script');
                 s.type = 'text/javascript';
                 s.charset = 'UTF-8';
@@ -204,25 +213,168 @@ const MouseGesture = (function() {
                 document.body.appendChild(d);
             }
             let onComplete, onProgress, onError;
-            onComplete = onError = function() {
+            onError = function(){
+                GM_notification({
+                    title: 'MouseGesture:',
+                    text: cfg.usr.language ? "出了问题,无法完成翻译" : "Oops,Something wrong Hapend...",
+                    timoeout: 2000
+                });
+                tips.parentNode.removeChild(tips);
+            };
+            onComplete = function() {
                 tips.parentNode.removeChild(tips);
             };
             onProgress = function() {
                 document.documentElement.appendChild(tips);
-                tips.innerHTML = cfg.language ? "翻译中..." : "Translating...";
+                tips.innerHTML = cfg.usr.language ? "翻译中..." : "Translating...";
             };
             let doTranslate = function() {
                 if (typeof Microsoft === 'undefined' || typeof Microsoft.Translator === 'undefined') return;
                 clearInterval(loadTranslatorTimer);
-                Microsoft.Translator.Widget.Translate('', cfg.translateTo || _cfg.translateTo, onProgress, onError, onComplete, () => {}, (cfg.translateTimeout || _cfg.translateTimeout) * 1000);
+                Microsoft.Translator.Widget.Translate('', cfg.usr.translateTo || _cfg.usr.translateTo, onProgress, onError, onComplete, () => {}, (cfg.usr.translateTimeout || _cfg.usr.translateTimeout) * 1000);
             };
             loadTranslatorTimer = setInterval(doTranslate, 200);
-            setTimeout(() => clearTimeout(loadTranslatorTimer), (cfg.translateTimeout || _cfg.translateTimeout) * 1000);
+            setTimeout(() => clearTimeout(loadTranslatorTimer), (cfg.usr.translateTimeout || _cfg.usr.translateTimeout) * 1000);
         },
-        //use MicrosoftTranslator to translate the page
         fkVip: function() {
-            // window.open((cfg.vipApi || _cfg.vipApi)+location.href,'_blank');
-            GM_openInTab((cfg.vipApi || _cfg.vipApi)+location.href, {active:true});
+            // window.open((cfg.usr.vipApi || _cfg.usr.vipApi)+location.href,'_blank');
+            GM_openInTab((cfg.usr.vipApi || _cfg.usr.vipApi)+location.href, {active:true});
+        },
+        closeOtherTabs: function() {
+            GM_setValue('closeAll', Date());
+        },
+        selectAndTranslateOn: function() {
+            window.document.body.addEventListener('mouseup', translate, false);
+            var context = new AudioContext();
+            function translate(e) {
+                var previous = document.querySelector('.youdaoPopup');
+                if (previous) {
+                    document.body.removeChild(previous);
+                }
+                var selectObj = document.getSelection();
+                if (selectObj.anchorNode.nodeType == 3) {
+                    var word = selectObj.toString();
+                    if (word == '') {
+                        return;
+                    }
+                    word = word.replace('-\n', '');
+                    word = word.replace('\n', ' ');
+                    var ts = new Date().getTime();
+                    var x = e.clientX;
+                    var y = e.clientY;
+                    translate(word, ts);
+                }
+                function popup(x, y, result) {
+                    var youdaoWindow = document.createElement('div');
+                    youdaoWindow.classList.toggle('youdaoPopup');
+                    var dict = JSON.parse(result);
+                    var query = dict['query'];
+                    var errorCode = dict['errorCode'];
+                    if (dict['basic']) {
+                        word();
+                    } else {
+                        sentence();
+                    }
+                    youdaoWindow.style.cssText = `z-index:999999;display:block;position:fixed;color:black;text-align:left;word-wrap:break-word;background:lightBlue;border-radius:5px;box-shadow:0 0 5px 0;opacity:1;width:200px;left:${x+10}px;padding:5px`;
+                    if (x + 200 + 10 >= window.innerWidth) {
+                        youdaoWindow.style.left = parseInt(youdaoWindow.style.left) - 200 + 'px';
+                    }
+                    if (y + youdaoWindow.offsetHeight + 10 >= window.innerHeight) {
+                        youdaoWindow.style.bottom = '20px';
+                    } else {
+                        youdaoWindow.style.top = y + 10 + 'px';
+                    }
+                    document.body.appendChild(youdaoWindow);
+                    function word() {
+                        var basic = dict['basic'];
+                        var header = document.createElement('p');
+                        var span = document.createElement('span');
+                        span.innerHTML = query;
+                        header.appendChild(span);
+                        var phonetic = basic['phonetic'];
+                        if (phonetic) {
+                            var phoneticNode = document.createElement('span');
+                            phoneticNode.innerHTML = '[' + phonetic + ']';
+                            phoneticNode.style.cursor = 'pointer';
+                            header.appendChild(phoneticNode);
+                            phoneticNode.addEventListener('mouseup', function(e) {
+                                e.stopPropagation()
+                            }, false);
+                            var soundUrl = 'https://dict.youdao.com/dictvoice?type=2&audio={}'.replace('{}', query);
+                            var promise = new Promise(function() {
+                                GM_xmlhttpRequest({
+                                    method: 'GET',
+                                    url: soundUrl,
+                                    responseType: 'arraybuffer',
+                                    onload: function(res) {
+                                        try {
+                                            context.decodeAudioData(res.response, function(buffer) {
+                                                phoneticNode.addEventListener('mouseup', function() {
+                                                    var source = context.createBufferSource();
+                                                    source.buffer = buffer;
+                                                    source.connect(context.destination);
+                                                    source.start(0);
+                                                }, false);
+                                                header.appendChild(document.createTextNode('✓'));
+                                            })
+                                        } catch (e) {}
+                                    }
+                                });
+                            });
+                            promise.then();
+                        }
+                        header.style.color = 'darkBlue';
+                        header.style.margin = '0';
+                        header.style.padding = '0';
+                        span.style.color = 'black';
+                        youdaoWindow.appendChild(header);
+                        var hr = document.createElement('hr');
+                        hr.style.margin = '0';
+                        hr.style.padding = '0';
+                        youdaoWindow.appendChild(hr);
+                        var ul = document.createElement('ul');
+                        ul.style.margin = '0';
+                        ul.style.padding = '0';
+                        basic['explains'].map(function(trans) {
+                            var li = document.createElement('li');
+                            li.style.listStyle = 'none';
+                            li.style.margin = '0';
+                            li.style.padding = '0';
+                            li.appendChild(document.createTextNode(trans));
+                            ul.appendChild(li);
+                        });
+                        youdaoWindow.appendChild(ul);
+                    }
+                    function sentence() {
+                        var ul = document.createElement('ul');
+                        ul.style.margin = '0';
+                        ul.style.padding = '0';
+                        dict['translation'].map(function(trans) {
+                            var li = document.createElement('li');
+                            li.style.listStyle = 'none';
+                            li.style.margin = '0';
+                            li.style.padding = '0';
+                            li.appendChild(document.createTextNode(trans));
+                            ul.appendChild(li);
+                        });
+                        youdaoWindow.appendChild(ul);
+                    }
+                }
+                function translate(word, ts) {
+                    var reqUrl = 'http://fanyi.youdao.com/openapi.do?type=data&doctype=json&version=1.1&relatedUrl=' +
+                        escape('http://fanyi.youdao.com/#') +
+                        '&keyfrom=fanyiweb&key=null&translate=on' +
+                        '&q={}'.replace('{}', word) +
+                        '&ts={}'.replace('{}', ts);
+                    GM_xmlhttpRequest({
+                        method: 'GET',
+                        url: reqUrl,
+                        onload: function(res) {
+                            popup(x, y, res.response);
+                        }
+                    });
+                }
+            }
         },
 
         /*
@@ -231,7 +383,7 @@ const MouseGesture = (function() {
            setTimeout(zoomer, 200);
             function zoomer(evt){
                 let a, b,isZoom = true;
-                a = document.elementFromPoint(evt.clientX,evt.clientY).style.zoom=cfg.zoom;
+                a = document.elementFromPoint(evt.clientX,evt.clientY).style.zoom=cfg.usr.zoom;
                 a.setAttribute('data-zoom', 'true');
                 [].every.forEach(document.querySelectorAll('*[data-zoom=true]'), function(item){
                     if (item !== a) item.style.zoom = null;
@@ -244,9 +396,9 @@ const MouseGesture = (function() {
             let txt = window.getSelection().toString();
             txt = encodeURIComponent(txt);
             //get search enging
-            openURL = cfg.searchEnging + txt || _cfg.searchEnging + txt;
+            openURL = cfg.usr.searchEnging + txt || _cfg.usr.searchEnging + txt;
             GM_openInTab(openURL, {
-                active: cfg.notBackground || _cfg.notBackground
+                active: cfg.usr.notBackground || _cfg.usr.notBackground
             });
         },
         copySelectedText: function() {
@@ -285,8 +437,8 @@ const MouseGesture = (function() {
         },
         searchImg: function() {
             //TamperMonkey
-            GM_openInTab(cfg.imgSearchEnging.replace(/%URL/, dObj.img), {
-                active: cfg.isImgSearchTabActive
+            GM_openInTab(cfg.usr.imgSearchEnging.replace(/%URL/, dObj.img), {
+                active: cfg.usr.isImgSearchTabActive
             });
         },
         selectTheImage: function() {
@@ -392,7 +544,7 @@ const MouseGesture = (function() {
     //============ function for all
     // when a gesture is not define, show this tips
     function showGestureNotDefineTips() {
-        tips.innerHTML = symbolTrack + '<br/>' + (cfg.funNotDefine || _cfg.funNotDefine);
+        tips.innerHTML = symbolTrack + '<br/>' + (cfg.usr.funNotDefine || _cfg.usr.funNotDefine);
     }
     //draw track & show tips
     function tracer(e) {
@@ -402,7 +554,7 @@ const MouseGesture = (function() {
             dx = Math.abs(cx - x),
             dy = Math.abs(cy - y),
             distance = dx * dx + dy * dy;
-        if (distance < cfg.sensitivity * cfg.sensitivity) {
+        if (distance < cfg.usr.sensitivity * cfg.usr.sensitivity) {
             return;
         }
         //if mouse right key is press and document has no <canvas>,then creaet <canvas> and append it
@@ -424,24 +576,24 @@ const MouseGesture = (function() {
             //show action tips
             switch (flag.actionType) {
                 case "drag":
-                    switch (cfg.dragType) {
+                    switch (cfg.usr.dragType) {
                         case "text":
-                            if (dt2n[track] !== undefined) {
-                                tips.innerHTML = symbolTrack + '<br/>' + fn.dragText[dt2n[track]][cfg.language];
+                            if (cfg.dt2n[track] !== undefined) {
+                                tips.innerHTML = symbolTrack + '<br/>' + fn.dt2n[cfg.dt2n[track]][cfg.usr.language];
                             } else {
                                 showGestureNotDefineTips();
                             }
                             break;
                         case "link":
-                            if (dl2n[track] !== undefined) {
-                                tips.innerHTML = symbolTrack + '<br/>' + fn.dragLink[dl2n[track]][cfg.language];
+                            if (cfg.dl2n[track] !== undefined) {
+                                tips.innerHTML = symbolTrack + '<br/>' + fn.dl2n[cfg.dl2n[track]][cfg.usr.language];
                             } else {
                                 showGestureNotDefineTips();
                             }
                             break;
                         case "image":
-                            if (di2n[track] !== undefined) {
-                                tips.innerHTML = symbolTrack + '<br/>' + fn.dragImg[di2n[track]][cfg.language];
+                            if (cfg.di2n[track] !== undefined) {
+                                tips.innerHTML = symbolTrack + '<br/>' + fn.di2n[cfg.di2n[track]][cfg.usr.language];
                             } else {
                                 showGestureNotDefineTips();
                             }
@@ -451,9 +603,9 @@ const MouseGesture = (function() {
                     }
                     break;
                 case "common":
-                    if (t2n[track] !== undefined) {
+                    if (cfg.t2n[track] !== undefined) {
                         //show gesture track and function name
-                        tips.innerHTML = symbolTrack + '<br/>' + fn.gesture[t2n[track]][cfg.language];
+                        tips.innerHTML = symbolTrack + '<br/>' + fn.t2n[cfg.t2n[track]][cfg.usr.language];
                     } else {
                         showGestureNotDefineTips();
                     }
@@ -465,7 +617,7 @@ const MouseGesture = (function() {
 
         //draw track on canvas
         if (flag.hascanvas) {
-            ctx.lineWidth = Math.min(cfg.maxLineWidth, ctx.lineWidth += cfg.lineGrowth);
+            ctx.lineWidth = Math.min(cfg.usr.maxLineWidth, ctx.lineWidth += cfg.usr.lineGrowth);
             ctx.beginPath();
             ctx.moveTo(x, y);
             ctx.lineTo(e.clientX, e.clientY);
@@ -487,9 +639,9 @@ const MouseGesture = (function() {
         canvas.height = window.innerHeight;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
-        if(cfg.lineColor.length>6)canvas.style.opacity = parseInt(cfg.lineColor.slice(6),16)/255;
-        ctx.lineWidth = cfg.minLineWidth;
-        ctx.strokeStyle = '#' + cfg.lineColor.slice(0,6); //like delicious link color//line color
+        if(cfg.usr.lineColor.length>6)canvas.style.opacity = parseInt(cfg.usr.lineColor.slice(6),16)/255;
+        ctx.lineWidth = cfg.usr.minLineWidth;
+        ctx.strokeStyle = '#' + cfg.usr.lineColor.slice(0,6); //like delicious link color//line color
 
         flag.hascanvas = true;
     }
@@ -502,37 +654,37 @@ const MouseGesture = (function() {
         flag.isPress = false;
         flag.hascanvas = false;
     }
-    //create <canvas>
-    let canvas = document.createElement("canvas");
-    canvas.style.cssText = "position:fixed;top:0;left:0;z-index:9999999;";
-    let ctx = canvas.getContext("2d");
-    //create tips<div>
-    let tips = document.createElement('div');
-    tips.style.cssText = `
-        all: initial !important;
-        position: fixed !important;
-        z-index: 9999998 !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        font-family: "Orkney Regular", "Arial", sans-serif !important;
-        /*font-size: 50px !important;*/
-        font-size: ${cfg.fontSize  || _cfg.fontSize}px !important;
-        color:white !important;
-        white-space: nowrap !important;
-        line-height: normal !important;
-        text-shadow: 1px 1px 5px rgba(0,0,0, 0.8) !important;
-        text-align: center !important;
-        padding: 25px 20px 20px 20px !important;
-        border-radius: 5px !important;
-        font-weight: bold !important;
-        background:#${cfg.tipsBackground || _cfg.tipsBackground} !important;
-    `;
+    function createCanvaTips(){
+        //create <canvas>
+        canvas = document.createElement("canvas");
+        canvas.style.cssText = "position:fixed;top:0;left:0;z-index:9999999;";
+        ctx = canvas.getContext("2d");
+        //create tips<div>
+        tips = document.createElement('div');
+        tips.style.cssText = `
+            all: initial !important;
+            position: fixed !important;
+            z-index: 9999998 !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            font-family: "Orkney Regular", "Arial", sans-serif !important;
+            /*font-size: 50px !important;*/
+            font-size: ${cfg.usr.fontSize  || _cfg.usr.fontSize}px !important;
+            color:white !important;
+            white-space: nowrap !important;
+            line-height: normal !important;
+            text-shadow: 1px 1px 5px rgba(0,0,0, 0.8) !important;
+            text-align: center !important;
+            padding: 25px 20px 20px 20px !important;
+            border-radius: 5px !important;
+            font-weight: bold !important;
+            background:#${cfg.usr.tipsBackground || _cfg.usr.tipsBackground} !important;
+        `;
+    }
+    createCanvaTips();
+
     //=========== event processing
-    //when close a tab, save it's url, in order to reopen it: reopenLatestCloseTab
-    window.addEventListener('unload', function() {
-        GM_setValue('latestTab', window.location.href);
-    }, false);
     //right click ==> gesture
     window.addEventListener('mousedown', function(e) {
         // 3 : mouse.right ; 1:mouse.left
@@ -551,8 +703,8 @@ const MouseGesture = (function() {
         window.removeEventListener('mousemove', tracer, false);
         if (track !== "") {
             e.preventDefault();
-            if (t2n.hasOwnProperty(track)) {
-                funs[t2n[track]]();
+            if (cfg.t2n.hasOwnProperty(track)) {
+                funs[cfg.t2n[track]]();
             }
         }
     }, false);
@@ -583,21 +735,21 @@ const MouseGesture = (function() {
         isDrag = false;
         if (track !== "") {
             // dragType + track => function
-            console.log(dObj);
-            switch (cfg.dragType) {
+            // console.log(dObj);
+            switch (cfg.usr.dragType) {
                 case "text":
-                    if (dt2n.hasOwnProperty(track)) {
-                        funs[dt2n[track]]();
+                    if (cfg.dt2n.hasOwnProperty(track)) {
+                        funs[cfg.dt2n[track]]();
                     }
                     break;
                 case "link":
-                    if (dl2n.hasOwnProperty(track)) {
-                        funs[dl2n[track]]();
+                    if (cfg.dl2n.hasOwnProperty(track)) {
+                        funs[cfg.dl2n[track]]();
                     }
                     break;
                 case "image":
-                    if (di2n.hasOwnProperty(track)) {
-                        funs[di2n[track]](e);
+                    if (cfg.di2n.hasOwnProperty(track)) {
+                        funs[cfg.di2n[track]](e);
                     }
                     break;
                 default:
@@ -613,54 +765,54 @@ const MouseGesture = (function() {
         //confirm dragType
         if (nodetype === 3) {
             let isLink = e.target.parentNode.href;
-            if (cfg.dragtext && !isLink) {
-                cfg.dragType = "text";
+            if (cfg.usr.dragtext && !isLink) {
+                cfg.usr.dragType = "text";
             } else if (isLink) { //use regular express to match?
                 e = e.target.parentNode;
-                cfg.dragType = "link";
+                cfg.usr.dragType = "link";
             }
         }
         if (nodetype === 1) {
-            if (e.target.value && cfg.dragtext && cfg.draginput) {
-                cfg.dragType = "text";
+            if (e.target.value && cfg.usr.dragtext && cfg.usr.draginput) {
+                cfg.usr.dragType = "text";
             } else if (e.target.href) {
                 if (window.getSelection().toString() == "" || e.target.textContent.length > window.getSelection().toString().lenght) {
-                    if (cfg.draglink) {
-                        cfg.dragType = "link";
+                    if (cfg.usr.draglink) {
+                        cfg.usr.dragType = "link";
                     }
                 } else {
-                    if (cfg.dragtext) {
-                        cfg.dragType = "text";
+                    if (cfg.usr.dragtext) {
+                        cfg.usr.dragType = "text";
                     }
                 }
-                if (!cfg.dragtext && cfg.draglink) {
-                    cfg.dragType = "link";
+                if (!cfg.usr.dragtext && cfg.usr.draglink) {
+                    cfg.usr.dragType = "link";
                 }
             } else if (e.target.src) {
                 if (e.target.parentNode.href) {
-                    if (cfg.dragimage && (e[cfg.imgfirst + "Key"] || cfg.imgfirstcheck)) {
-                        cfg.dragType = "image";
-                    } else if (cfg.draglink) {
-                        cfg.dragType = "link";
+                    if (cfg.usr.dragimage && (e[cfg.usr.imgfirst + "Key"] || cfg.usr.imgfirstcheck)) {
+                        cfg.usr.dragType = "image";
+                    } else if (cfg.usr.draglink) {
+                        cfg.usr.dragType = "link";
                         e = e.target.parentNode;
                     }
 
-                } else if (cfg.dragimage) {
-                    cfg.dragType = "image";
+                } else if (cfg.usr.dragimage) {
+                    cfg.usr.dragType = "image";
                 }
             }
 
         }
 
 
-        if (!cfg.dragType) {
+        if (!cfg.usr.dragType) {
             flag.isDrag = false;
             return;
         }
         dObj.text = window.getSelection().toString() || e.target.innerHTML;
         dObj.link = e.href || e.target.href;
         dObj.img = e.target.src;
-        if (cfg.setdragurl && cfg.dragType == "text") {
+        if (cfg.usr.setdragurl && cfg.usr.dragType == "text") {
             var tolink;
             if (dObj.text.indexOf("http://") != 0 && dObj.text.indexOf("https://") != 0 && dObj.text.indexOf("ftp://") != 0 && dObj.text.indexOf("rtsp://") != 0 && dObj.text.indexOf("mms://") != 0 && dObj.text.indexOf("chrome-extension://") != 0 && dObj.text.indexOf("chrome://") != 0) {
                 tolink = "http://" + dObj.text;
@@ -669,7 +821,7 @@ const MouseGesture = (function() {
             }
             var urlreg = /^((chrome|chrome-extension|ftp|http(s)?):\/\/)([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
             if (urlreg.test(tolink)) {
-                cfg.dragType = "link";
+                cfg.usr.dragType = "link";
                 dObj.link = tolink;
             }
         }
@@ -677,34 +829,46 @@ const MouseGesture = (function() {
         return dObj;
     }
 
-    //========== Setting UI
-    function createSeetingUi() {
-        let CSS = `
-            #HYetting {z-index:999997;width:960px;height:540px;margin:0;padding:0;font-family:"微软雅黑";background:white;border:7px solid yellowgreen;border-radius:10px;position:fixed;top:50px;left:50px;box-shadow:2px 2px 2px 4px darkcyan;}
-            #ogo {width:90px;height:85px;display:block;font-size:90px;font-weight:bolder;text-align:center;position:relative;top:-23px;color:#000;vertical-align:top;text-decoration:blink;text-shadow:5px 5px 3px #05fde7;}
-            #enu {z-index:999999;height:100%;width:90px;background:yellowgreen;color:white;}
-            #enu li {list-style-type:none;background:yellowgreen;border-top:1px dashed white;}
-            .elected {box-shadow:inset 2px 2px 1px 4px rgba(16,12,12,0.6);}
-            #enu li:hover {background:#05FDE7 !important;color:#FF841D;animation:enuLi 0.4s;-moz-animation:enuLi 0.4s;-webkit-animation:enuLi 0.4s;-o-animation:myfirst 0.4s;}
-            @keyframes enuLi {from {background:yellowgreen;color:white;} to {background:#05FDE7;} }
-            @-moz-keyframes enuLi {from {background:yellowgreen;} to {background:#05FDE7;} }
-            @-webkit-keyframes enuLi {from {background:yellowgreen;} to {background:#05FDE7;} }
-            @-o-keyframes enuLi {from {background:#16DA00;} to {background:#05FDE7;} }
-            #enu li span {display:block;width:50px;height:50px;font-size:50px;padding:5px 20px;text-align:center;}
-            #enu b {display:block;height:30px;font-size:20px;width:90px;text-align:center;}
-            /*#mg1,#mg2,#mg3,#mg4,#mg5*/.HYontent {height:540px;overflow-x:hidden;width:870px;font-size:16px;font-family:"微软雅黑";overflow-y:scroll;position:absolute;left:90px;top:0;z-index:999998;padding:10px,20px;}
-            .HYontent * {border-radius:8px;}
-            .HYontent h1 {display:block;width:820px;font-size:30px;float:left;top:0;left:90px;padding:5px;margin:0 10px;border-left:5px solid yellowgreen;background:#9acd3259;}
-            .HYontent li {list-style-type:none;width:810px;height:56px;padding:5px 5px;margin:5px 20px;float:left;}
-            .HYontent li:hover {box-shadow:inset 1px 1px 1px 3px #9acd32de;}
-            .HYontent li span:first-child {display:inline-block;font-size:18px;font-weight:bold;padding:2px 10px;width:450px;height:24px;float:left;}
-            .HYontent li span:nth-child(2) {display:inline-block;padding:2px 10px;height:20px;width:530px;float:left;}
-            .HYontent li span:nth-child(3) {display:inline-block;width:200px;height:30px;padding:5px;margin:8px 20px;position:relative;right:0;top:0;border:1px solid #66666652;}
-            .HYontent input[type="text"] {width:100%;height:100%;text-align:center;background:transparent;border:0;font-size:20px;}
-            .HYontent input[type="checkbox"] {width:0px;}
-            .HYontent label {width:100%;height:100%;display:block;}
-        `;
+    //when close a tab, save it's url, in order to reopen it: reopenLatestCloseTab
+    window.addEventListener('unload', function() {
+        GM_setValue('latestTab', window.location.href);
+    }, false);
+    //used in func: closeOtherTabs
+    if(!GM_getValue('closeAll','')) GM_setValue('closeAll', Date());
+    GM_addValueChangeListener('closeAll',function(name, old_value, new_value, remote){if(remote)window.close();});
+    //update all tabs MG's config
+    if(!GM_getValue('configChanged','')) GM_setValue('configChanged', Date());
+    GM_addValueChangeListener('configChanged',function(name, old_value, new_value, remote){
+        if(remote) cfg = GM_getValue('cfg', _cfg);
+        createCanvaTips();
+    });
+    //
 
+
+    //========== Setting UI
+    let createSeetingUi = function(){
+        let CSS = `
+            #HYetting { z-index: 999997 !important; background: white; width: 100% !important; height: 100% !important; font-family: "微软雅黑" !important; position: fixed !important; top: 0 !important; left: 0 !important; }
+            #enu *, .HYontent * { border-radius: 5px !important; font-size: 16px !important; }
+            #ogo { background: white !important; box-shadow: inset 0 0 25px 15px yellowgreen !important; width: 80px !important; height: 80px !important; padding: 0 10px 30px 10px !important; display: block !important; font-size: 80px !important; color: cyan !important; text-shadow: 6px 5px 15px black !important; }
+            #enu { z-index: 999999 !important; height: 100% !important; width: 100px !important; background: yellowgreen !important; color: white !important; text-align: center !important; }
+            #enu li { list-style-type: none !important; border-top: 1px dashed white !important; margin: 10px 15px !important; }
+            .elected { box-shadow: inset 2px 2px 1px 4px rgba(16, 12, 12, 0.6) !important; }
+            #enu li:hover { background: #05FDE7 !important; color: #FF841D !important; }
+            #enu li span { display: block !important; width: 40px !important; height: 40px !important; font-size: 35px !important; font-weight: bold !important; padding: 0 15px !important; }
+            #enu b { display: block !important; width: 70px !important; text-align: center !important; margin-top: 10px !important; }
+            .HYontent { height: 100% !important; width: 100% !important; overflow-y: scroll !important; position: absolute !important; left: 100px !important; top: 0 !important; z-index: 999998 !important; padding: 20px !important; }
+            .HYontent h1 { display: block !important; width: 800px !important; font-size: 30px !important; float: left !important; top: 0 !important; left: 90px !important; padding: 5px 12px !important; margin: 0 10px !important; border-left: 5px solid yellowgreen !important; background: #9acd3259 !important; }
+            .HYontent li { list-style-type: none !important; width: 800px !important; height: 56px !important; padding: 5px !important; margin: 5px 20px !important; float: left !important; }
+            .HYontent li:hover { box-shadow: inset 1px 1px 1px 3px #9acd32de !important; }
+            .HYontent li span:first-child { display: inline-block !important;text-align: left; font-size: 18px !important; font-weight: bold !important; padding: 2px 10px !important; width: 100% !important; height: 24px !important; float: left !important; }
+            .HYontent li span:nth-child(2) { display: inline-block !important;text-align: left; padding: 2px 10px !important; height: 20px !important; width: 100% !important; float: left !important; }
+            .HYontent li span:nth-child(3) { display: inline-block !important; width: 200px !important; height: 30px !important; padding: 5px !important; margin: 8px 20px !important; position: relative !important; float: right !important; right: 0 !important; top: -56px !important; }
+            .HYontent input[type="text"] { width: 100% !important; height: 100% !important; text-align: center !important; border: 1px solid #66666652 !important; font-size: 20px !important; }
+            .HYontent input[type="checkbox"] { width: 0 !important; }
+            .HYontent select { width: 100% !important; height: 100% !important; }
+            .HYontent label { width: 50px !important; height: 100% !important; display: block !important; border: 1px solid #66666652 !important; }
+        `;
         let setting = {
             mg1Start: {
                 type: '1',
@@ -738,7 +902,7 @@ const MouseGesture = (function() {
                 data: {
                     type: 'input',
                     name: 'fontSize',
-                    more: 'num'
+                    more: ''
                 }
             },
             lineColor: {
@@ -818,7 +982,7 @@ const MouseGesture = (function() {
                 type: '2'
             },
             notBackground: {
-                item: ["新标签在前台", 'Tis Background Color'],
+                item: ["新标签在前台", 'Open Tab Foreground'],
                 description: ['打开新标签后马上转到新标签'],
                 data: {
                     type: 'checkbox',
@@ -939,7 +1103,7 @@ const MouseGesture = (function() {
                     <li data-target="mg2"><span>↯</span><b>Gesture</b></li>
                     <li data-target="mg3"><span>⎘</span><b>Drag</b></li>
                     <li data-target="mg4"><span>❓</span><b>About</b></li>
-                    <li data-target="mg5" id="lose"><span>🗙</span><b>Close</b></li>
+                    <li id="lose"><span>🗙</span><b>Close</b></li>
                 </div>
             `;
         //Setting main: config
@@ -962,21 +1126,18 @@ const MouseGesture = (function() {
             } else {
                 if (setting[i].data.type === 'input') {
                     if (setting[i].data.more === 'color') {
-                        span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,cfg[setting[i].data.name] || _cfg[setting[i].data.name])}" style="background:#${GM_getValue(setting[i].data.name,cfg[setting[i].data.name])};"  data-mark="color">`;
+                        span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,cfg.usr[setting[i].data.name] || _cfg.usr[setting[i].data.name])}" style="background:#${GM_getValue(setting[i].data.name,cfg.usr[setting[i].data.name])};"  data-mark="color">`;
                     } else if (setting[i].data.more === 'num') {
-                        span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,cfg[setting[i].data.name] || _cfg[setting[i].data.name])}" data-mark="num">`;
-                        // } else if (setting[i].data.more === 'select') {
-                        //     span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,cfg[setting[i].data.name] || _cfg[setting[i].data.name])}" data-mark="select">`;
+                        span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,cfg.usr[setting[i].data.name] || _cfg.usr[setting[i].data.name])}" data-mark="num">`;
                     } else {
-                        span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,cfg[setting[i].data.name] || _cfg[setting[i].data.name])}" data-mark="normal">`;
+                        span = `<input type="text" name="${setting[i].data.name}" value="${GM_getValue(setting[i].data.name,cfg.usr[setting[i].data.name] || _cfg.usr[setting[i].data.name])}" data-mark="normal">`;
                     }
                 } else if (setting[i].data.type === 'select') {
                     // setting[i]
                     span = makeSelectEle(selectobjs[setting[i].data.name], setting[i].data.name);
                 } else {
-                    isChecked = GM_getValue(setting[i].data.name, cfg[setting[i].data.name]) ? 'checked' : '';
-                    isOn = GM_getValue(setting[i].data.name, cfg[setting[i].data.name]) ? 'style = "background:yellowgreen;"' : 'style = "background:gray;"';
-                    // console.log(isOn);
+                    isChecked = GM_getValue(setting[i].data.name, cfg.usr[setting[i].data.name]) ? 'checked' : '';
+                    isOn = GM_getValue(setting[i].data.name, cfg.usr[setting[i].data.name]) ? 'style = "background:yellowgreen;"' : 'style = "background:gray;"';
                     span = `<label for="${setting[i].data.name}" ${isOn}><input type="checkbox" id="${setting[i].data.name}"  ${isChecked}></label>`;
 
                 }
@@ -986,19 +1147,17 @@ const MouseGesture = (function() {
 
         //setting main: gestures
         let _local = {
-            gesture: ['手势', 'Gesture'],
-            dragText: ['拖拽文本', 'Drag Text'],
-            dragLink: ['拖拽链接', 'Drag Link'],
-            dragImg: ['拖拽图片', 'Drag Image'],
+            t2n: ['手势', 'Gesture'],
+            dt2n: ['拖拽文本', 'Drag Text'],
+            dl2n: ['拖拽链接', 'Drag Link'],
+            di2n: ['拖拽图片', 'Drag Image'],
         };
 
         function makeSelectEle(obj, name) {
             let select = `<select name="${name}" data-mark="select">`;
-            let val = GM_getValue(cfg[name], _cfg[name]);
-            console.log(val);
+            let val = GM_getValue(cfg.usr[name], _cfg.usr[name]);
             for (let i in obj) {
                 select += `<option value ="${obj[i]}">${i}</option>`;
-                // console.log(val===obj[i]);
             }
             select = select.replace(`\"${val}\"`, `\"${val}\" selected`);
             select += '</select>';
@@ -1006,19 +1165,17 @@ const MouseGesture = (function() {
             return select;
         }
 
-
-        this.letter2arrow = function(str) {
+        let letter2arrow = function(str){
             // function letter2arrow(str){
             return str.replace(/[^uUdDlLrR⬅➞⬇⬆]/g, '').replace(/[lL]/g, '⬅').replace(/[rR]/g, '➞').replace(/[dD]/g, '⬇').replace(/[uU]/g, '⬆');
         };
-        this.arrow2letter = function(str) {
-            // function arrow2letter(str){
+        let arrow2letter = function(str){
             return str.replace(/⬅/g, 'L').replace(/➞/g, 'R').replace(/⬇/g, 'D').replace(/⬆/g, 'U');
         };
 
         function makeDragUI(type, curren) {
             let tt = '';
-            tt += `<h1>${_local[type][cfg.language]}</h1>`;
+            tt += `<h1>${_local[type][cfg.usr.language]}</h1>`;
             for (let i in fn[type]) {
                 t = '';
                 for (let j in curren) {
@@ -1026,14 +1183,14 @@ const MouseGesture = (function() {
                         t = j;
                     }
                 }
-                tt += `<li><span>${i}</span><span>${fn[type][i][cfg.language]}</span><span><input type="text" name="${i}" value="${letter2arrow(t)}" data-mark="${type}"></span></li>`;
+                tt += `<li><span>${i}</span><span>${fn[type][i][cfg.usr.language]}</span><span><input type="text" name="${i}" value="${letter2arrow(t)}" data-mark="${type}"></span></li>`;
             }
             return tt;
         }
         //gesture
-        txt += '<div id="mg2" class="HYontent">' + makeDragUI('gesture', t2n) + '</div>';
+        txt += '<div id="mg2" class="HYontent">' + makeDragUI('t2n', cfg.t2n) + '</div>';
 
-        txt += '<div id="mg3" class="HYontent">' + makeDragUI('dragText', dt2n) + makeDragUI('dragLink', dl2n) + makeDragUI('dragImg', di2n) + '</div>';
+        txt += '<div id="mg3" class="HYontent">' + makeDragUI('dt2n', cfg.dt2n) + makeDragUI('dl2n', cfg.dl2n) + makeDragUI('di2n', cfg.di2n) + '</div>';
         txt += '<div id="mg4" class="HYontent"><a href="https://github.com/woolition/greasyforks/blob/master/mouseGesture/HY-MouseGesture.md" style="display:block;width: 90%;height: auto;font-size: 60px;text-decoration: none;font-weight: bolder;padding: 50px 30px; color:yellowgreen;"> (●￣(ｴ)￣●)づ <br>点我看更多介绍! </a></div>';
 
         GM_addStyle(CSS);
@@ -1041,7 +1198,8 @@ const MouseGesture = (function() {
         a.id = "HYetting";
         a.innerHTML = txt;
         document.documentElement.appendChild(a);
-        this.selected = function(e) {
+        let selected = function(e) {
+         // this.selected = function(e) {
             let tar;
             if (e.target.tagName === "LI") {
                 tar = e.target;
@@ -1057,7 +1215,8 @@ const MouseGesture = (function() {
             });
             document.getElementById(tar.dataset.target).setAttribute('style', 'display:block;');
         };
-        this.setConfig = function(e) {
+        let setConfig = function(e) {
+         // this.setConfig = function(e) {
             // this.updateFns = function(cssSelector){
             function updateFns(cssSelector) {
                 let a = {};
@@ -1073,15 +1232,15 @@ const MouseGesture = (function() {
             }
             switch (e.target.dataset.mark) {
                 case 'color':
-                    cfg[e.target.name] = e.target.value;
-                    GM_setValue('cfg', cfg);
-                    e.target.style.background = '#' + e.target.value;
+                    cfg.usr[e.target.name] = e.target.value;
+                    // GM_setValue('cfg', cfg);
+                    e.target.style.background = '#' + e.target.value + '!important';
                     break;
                 case 'num':
                     let b;
                     switch (e.target.name) {
                         case 'language':
-                            b = (e.target.value == 1 || e.target.value == 0) ? e.target.value : cfg[e.target.name];
+                            b = (e.target.value == 1 || e.target.value == 0) ? e.target.value : cfg.usr[e.target.name];
                             break;
                         case 'sensitivity':
                         case 'fontSize':
@@ -1091,43 +1250,27 @@ const MouseGesture = (function() {
                             b = parseFloat(parseFloat(e.target.value).toFixed(2));
                             break;
                     }
-                    cfg[e.target.name] = b;
-                    GM_setValue('cfg', cfg);
-                    e.target.style.background = '#' + e.target.value;
+                    cfg.usr[e.target.name] = b;
+                    // GM_setValue('cfg', cfg);
                     break;
                 case 'select':
                 case 'normal':
-                    cfg[e.target.name] = e.target.value;
-                    console.log('====' + cfg[e.target.name]);
-                    GM_setValue('cfg', cfg);
-                    break;
-                case 'gesture':
-                    t2n = updateFns('input[data-mark="gesture"]');
-                    GM_setValue('t2n', t2n);
-                    break;
-                case 'dragText':
-                    e.target.value = letter2arrow(e.target.value);
-                    dt2n = updateFns('input[data-mark="dragText"]');
-                    GM_setValue('dt2n', dt2n);
-                    break;
-                case 'dragLink':
-                    e.target.value = letter2arrow(e.target.value);
-                    dl2n = updateFns('input[data-mark="dragLink"]');
-                    GM_setValue('dl2n', dl2n);
-                    break;
-                case 'dragImg':
-                    e.target.value = letter2arrow(e.target.value);
-                    di2n = updateFns('input[data-mark="dragImg"]');
-                    GM_setValue('di2n', di2n);
+                    cfg.usr[e.target.name] = e.target.value;
+                    // GM_setValue('cfg', cfg);
                     break;
                 default:
+                    cfg[e.target.dataset.mark] = updateFns(`input[data-mark="${e.target.dataset.mark}"]`);
                     break;
             }
-        };
-        this.onOff = function(e) {
-            cfg[e.target.id] = e.target.checked;
             GM_setValue('cfg', cfg);
-            if (cfg[e.target.id]) {
+            GM_setValue('configChanged', Date());
+        };
+        let onOff = function(e) {
+         // this.onOff = function(e) {
+            cfg.usr[e.target.id] = e.target.checked;
+            GM_setValue('cfg', cfg);
+            GM_setValue('configChanged', Date());
+            if (cfg.usr[e.target.id]) {
                 e.target.parentNode.style.background = "yellowgreen";
             } else {
                 e.target.parentNode.style.background = "gray";
@@ -1142,7 +1285,7 @@ const MouseGesture = (function() {
         [].forEach.call(document.querySelectorAll('#HYetting select'), function(item) {
             item.addEventListener('change', setConfig, false);
         });
-        [].forEach.call(document.querySelectorAll('#HYetting input[data-mark*=drag],#HYetting input[data-mark=gesture]'), function(item) {
+        [].forEach.call(document.querySelectorAll('#HYetting input[data-mark*="2n"]'), function(item) {
             item.addEventListener('keyup', function(event) {
                 event.target.value = letter2arrow(event.target.value);
             }, false);
@@ -1159,7 +1302,7 @@ const MouseGesture = (function() {
             document.documentElement.removeChild(document.getElementById("HYetting"));
         }, false);
 
-    }
+    };
     // return;
 
 })();
