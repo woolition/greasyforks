@@ -4,7 +4,7 @@
 // @namespace      https://greasyfork.org/users/104201
 // @description    HY's mouse gesture script,supports ringt-key draw track functions and left-key drag functions.Drag target can be [Text] & [Links] & [Image]  Customizenable → Right click to draw ⇄(left,right) to setting
 // @description:zh-CN  鼠标手势脚本,就是这么拽:支持右键轨迹手势和左键拖拽功能.可以拖拽[文本],[链接]和[图片],支持自定义设置:鼠标画➡⬅(右左)路径,进入设置
-// @version      1.4
+// @version      1.5
 // @include      *
 // @noframes
 // @run-at       document-end
@@ -27,42 +27,49 @@
 /* jshint esversion: 6 */
 
 const MouseGesture = (function() {
+  let arrowCss = `@font-face {
+    font-family: 'MParrow';
+    src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAAQdAAoAAAAABPAAAQAAAAAAAAAAAAAAAAAAAAAECAAAABVPUy8yAAABYAAAAEQAAABgUc1dNGNtYXAAAAHEAAAARgAAAGAAcgFDZ2x5ZgAAAiAAAADwAAABNKukdSxoZWFkAAAA9AAAADQAAAA2DKcEFmhoZWEAAAEoAAAAHQAAACQEKQIaaG10eAAAAaQAAAAfAAAAJBGtAZVsb2NhAAACDAAAABQAAAAUATIBfm1heHAAAAFIAAAAFQAAACAACwAKbmFtZQAAAxAAAADnAAABe0DXvWtwb3N0AAAD+AAAABAAAAAgAAMAAXjaY2BkYGAA4gfLE97F89t8ZeBkYgCBq07amiD6mu+MRAaB/3cZXzFuAnI5GMDSAEgbC5142mNgZGBgYgACPSApwCDA+IqBkQEVcAIAGeEBSQAAAHjaY2BkYGDgBEIQzQAlkQAAAjsAFgAAAHjaY2Bm/MY4gYGVgYPRhzGNgYHBHUp/ZZBkaGFgYGJg5WSAAUYGJBCQ5poCpAwZLBkf/H/AoMeEpIaRAcpjAAAVNgmoeNpjYmBgYPzCYAbE3lBagImBQQzM/srgA6IBjAwITgB42i2KywmAQBQD57l+e9gCvAoieLd/7ShmnwZCmDBA4WslaLlMkdyzekdv0LFzSuaNQ9Kj+/ebUfNf0iv2YfA7Mb+pBQmvAAAAAAAAABQAJgA6AEwAXgByAIYAmnjaVY8hT8NAGIa/N0tzLJlgbY4LYmI0zekvTTmBuHomcGT9DXMkpD8Bwd+AhIo1wa8CVYfF4DCgm8wV7m6Gqc+8eZ7nI9AlRejwSCdERvAkYqHEQxljarv6zWIau0sEuv79xAtewy4tjJLpPH2q2rZqvtH3GAc6YiWaswlroQfPKLsaVzYe93ZXu90pneML94ElWRuWS/nhILO7qt2uG/K+M7f5OWxQsBJcLAtc9P04YLHeOu2xL1McJayMAtlx74W34YngW7n25tCe5VLoIp/nuAnxzz4eMwrO/zzDScZGG2xK393V74G7q/8AczlNtXjadY7BasJAEIb/mKgVSumh3ucBoiQetHjpod6K4MlLi7CROSzEBDaB0EfoC/hEvoLv0990G0Rwhtn99p9/hwHwiCMCXCLAsD0v0eP94DnEuNMjjDruY8rOHw/ofqcziEZUnvDhuccfn55D+v/1CC8d9/GFb88DPOO83hjnykbetuoqWxaSTpPkmmWlez1k6mQeyyxJF7HYwtbW5OI0V1OpHzHBGhsYOGaJBrJ7/TlhiS2USgVLtYAg5WoJ854uWLGzZx2QtR7BHDHPGbspFi1b/rGoWQY5347OnGU4UW82mfwCMzM4HQB42mNgZkAGjAxoAAAAjgAFSExQRAEARkMJAAAAUGF3J1oAAAAA) format('woff');
+    }
+    #MPcanvas{position:fixed;top:0;left:0;z-index:9999999;}
+    #MPtips{all:initial!important;position:fixed!important;z-index:9999998!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%)!important;font-family:MParrow,"Arial",sans-serif!important;color:white!important;white-space:nowrap!important;line-height:normal!important;text-shadow:1px 1px 5px rgba(0,0,0,0.8)!important;text-align:center!important;padding:25px 20px 20px 20px!important;border-radius:5px!important;font-weight:bold!important; }
+    `;
+  GM_addStyle(arrowCss);
   let dObj = {};// the Object Element being draged
   let x, y, startX, startY, screenX, screenY, canvas, tips, ctx,
   direction = '', track = '';
   //_*:  default cfg values
   let _cfg = {
-    // t2n: track <==> function name
-    t2n:{
-      "⬆":   {name:"toTop",    arg:[]},
-      "⬇":   {name:"toBottom", arg:[]},
-      "⬅":   {name:"back",     arg:[]},
-      "➡":   {name:"forward",  arg:[]},
-      "⬇➡": {name:"close",    arg:[]},
-      "⬅⬆": {name:"reopenTab",arg:[]},
-      "➡⬅": {name:"setting",  arg:[]}
+    t2n:{           // t2n: track <==> function name
+      "2":  {name:"toTop",    arg:[]},
+      "8":  {name:"toBottom", arg:[]},
+      "4":  {name:"back",     arg:[]},
+      "6":  {name:"forward",  arg:[]},
+      "86": {name:"close",    arg:[]},
+      "42": {name:"reopenTab",arg:[]},
+      "64": {name:"setting",  arg:[]}
     },
     dt2n: {         //dt2n: dragText <==> function name
-      "⬇":   {name:"copyText", arg:[]},
-      "➡":   {
-                name:"searchText",
-                arg:["http://www.baidu.com/s?wd=", true, true]
-              }
+      "8":  {name:"copyText", arg:[]},
+      "6":  {
+              name:"searchText",
+              arg:["http://www.baidu.com/s?wd=", true, true]
+            }
     },
     dl2n: {         //dl2n: drag link <==> function name
-      "➡": {name:"openLink",   arg:[]},
-      "⬇": {name:"copyLink",   arg:[]}
+      "6": {name:"openLink",   arg:[]},
+      "8": {name:"copyLink",   arg:[]}
     },
     di2n: {         //li2n: drag image <==> function
-      "⬇": {name:"saveImg",    arg:[]},
-      "➡": {
+      "8": {name:"saveImg",    arg:[]},
+      "6": {
               name:"searchImg",
               arg:['https://image.baidu.com/n/pc_search?queryImageUrl=%URL&uptype=urlsearch', true, true]
             },
-      "⬆": {name:"copyImgURL", arg:[]},
-      "⬅": {name:"selectImg",  arg:[]}
+      "2": {name:"copyImgURL", arg:[]},
+      "4": {name:"selectImg",  arg:[]}
     },
-
+    directions:        4,              // 4 or 8 directions
     minLineWidth:      1,               //canvas setting
     lineGrowth:        0.6,
     maxLineWidth:      10,
@@ -122,7 +129,7 @@ const MouseGesture = (function() {
     di2n: {
       saveImg:         ['保存图片',         'Save Image'],
       searchImg:       ['搜索图片',         'Search Image'],
-      copyImage:       ['复制图片',         'Copy Image to ClickBoard'],
+      // copyImage:       ['复制图片',         'Copy Image to ClickBoard'],
       copyImgURL:      ['复制图片链接',     'Copy ImageURL'],
       openImgNewTab:   ['新标签打开图片',   'Open Image in New Tab'],
       image2DataURL:   ['复制图片为DataURL','Copy Image as DataURL'],
@@ -554,75 +561,15 @@ const MouseGesture = (function() {
     };
   }
   //============ function for all
-  // when a gesture is not define, show this tips
-  function showGestureNotDefineTips() {
-    tips.innerHTML = track + '<br/>' + (cfg.funNotDefine);
-  }
-  //draw track & show tips
-  function tracer(e) {
-   // const tracer = function(e) {
-    let cx = e.clientX,
-      cy = e.clientY,
-      dx = Math.abs(cx - x),
-      dy = Math.abs(cy - y),
-      distance = dx * dx + dy * dy;
-    if (distance < cfg.sensitivity * cfg.sensitivity) {
-      return;
-    }
-    //if mouse right key is press and document has no <canvas>,then creaet <canvas> and append it
-    //到里面才添加元素是为了避免 鼠标一按下,还没有移动就已经图层了
-    if (flag.isPress && !flag.hascanvas) addCanvas(e);
-    let direction = "";
-    if (dx < dy) {
-      direction = cy > y ? "⬇" : "⬆";
+  //show Tips
+  function showTips(){
+    if (cfg[cfg.dragType][track] !== undefined) {
+      tips.innerHTML = track + '<br/>' + fn[cfg.dragType][cfg[cfg.dragType][track].name][cfg.language];
     } else {
-      direction = cx > x ? "➡" : "⬅";
+      tips.innerHTML = track + '<br/>' + (cfg.funNotDefine);
     }
-    if (track.charAt(track.length - 1) !== direction) {
-      track += direction;
-      //show action tips
-      switch (flag.actionType) {
-        case "drag":
-          switch (cfg.dragType) {
-            case "text":
-              if (cfg.dt2n[track] !== undefined) {
-                tips.innerHTML = track + '<br/>' + fn.dt2n[cfg.dt2n[track].name][cfg.language];
-              } else {
-                showGestureNotDefineTips();
-              }
-              break;
-            case "link":
-              if (cfg.dl2n[track] !== undefined) {
-                tips.innerHTML = track + '<br/>' + fn.dl2n[cfg.dl2n[track].name][cfg.language];
-              } else {
-                showGestureNotDefineTips();
-              }
-              break;
-            case "image":
-              if (cfg.di2n[track] !== undefined) {
-                tips.innerHTML = track + '<br/>' + fn.di2n[cfg.di2n[track].name][cfg.language];
-              } else {
-                showGestureNotDefineTips();
-              }
-              break;
-            default:
-              break;
-          }
-          break;
-        case "common":
-          if (cfg.t2n[track] !== undefined) {
-            //show gesture track and function name
-            tips.innerHTML = track + '<br/>' + fn.t2n[cfg.t2n[track].name][cfg.language];
-          } else {
-            showGestureNotDefineTips();
-          }
-          break;
-        default:
-          break;
-      }
-    }
-
-    //draw track on canvas
+  }
+  function drawTrack(e){
     if (flag.hascanvas) {
       ctx.lineWidth = Math.min(cfg.maxLineWidth, ctx.lineWidth += cfg.lineGrowth);
       ctx.beginPath();
@@ -631,6 +578,54 @@ const MouseGesture = (function() {
       ctx.stroke();
       ctx.closePath();
     }
+  }
+  function getDirection(cx, cy){
+    /*=================
+    |                 |
+    | 1↖   2↑   3↗ |
+    |                 |
+    | 4←    5    6→ |
+    |                 |
+    | 7↙   8↓   9↘ |
+    |                 |
+    |=================*/
+    let d, t;
+    if(cfg.directions === 4){   //4 directions
+      if (dx < dy) {
+        d = cy > y ? "8" : "2";
+      } else {
+        d = cx > x ? "6" : "4";
+      }
+    }else{  //8 directions
+      t = (cy-y)/(cx-x);
+      if(-0.4142<= t && t < 0.4142) d = cx > x ? '6' : "4";
+      else if(2.4142 <= t || t< -2.4142) d = cy > y ? '8' : '2';
+      else if(0.4142 <= t && t < 2.4142) d= cx > x ? '9' : '1';
+      else d = cy > y ? '7' : '3';
+    }
+    return d;
+  }
+  //draw track & show tips
+  function tracer(e) {
+   // const tracer = function(e) {
+    let cx = e.clientX,
+      cy = e.clientY;
+      dx = Math.abs(cx - x),
+      dy = Math.abs(cy - y);
+      distance = dx * dx + dy * dy;
+    if (distance < cfg.sensitivity * cfg.sensitivity) {
+      return;
+    }
+    //if mouse right key is press and document has no <canvas>,then creaet <canvas> and append it
+    //到里面才添加元素是为了避免 鼠标一按下,还没有移动就已经图层了
+    //这个图层有两方面作用,①画出轨迹 ②支持拖拽功能, 因为作用②,所以不能移到 drawTrack 函数里面
+    if (flag.isPress && !flag.hascanvas) addCanvas(e);
+    let direction = getDirection(cx,cy);
+    if (track.charAt(track.length - 1) !== direction) {
+      track += direction;
+      showTips();     //show action tips
+    }
+    drawTrack(e);      //draw track on canvas
     // update (x,y)
     x = cx;
     y = cy;
@@ -660,14 +655,12 @@ const MouseGesture = (function() {
   function createCanvaTips(){
     //create <canvas>
     canvas = document.createElement("canvas");
-    canvas.style.cssText = "position:fixed;top:0;left:0;z-index:9999999;";
+    canvas.id = 'MPcanvas';
     ctx = canvas.getContext("2d");
     //create tips<div>
     tips = document.createElement('div');
-    tips.style.cssText = `
-      all: initial !important; position: fixed !important; z-index: 9999998 !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; font-family: "Orkney Regular", "Arial", sans-serif !important; color:white !important; white-space: nowrap !important; line-height: normal !important; text-shadow: 1px 1px 5px rgba(0,0,0, 0.8) !important; text-align: center !important;  padding: 25px 20px 20px 20px !important; border-radius: 5px !important; font-weight: bold !important;
-      background:#${cfg.tipsBackground} !important;  font-size: ${cfg.fontSize}px !important;
-    `;
+    tips.id = 'MPtips';
+    tips.style.cssText = `background:#${cfg.tipsBackground} !important;  font-size: ${cfg.fontSize}px !important;`;
   }
   createCanvaTips();
 
@@ -680,7 +673,8 @@ const MouseGesture = (function() {
       startY = y = e.clientY;
       track = "";
       flag.isPress = true;
-      flag.actionType = "common";
+      // flag.actionType = "common";
+      cfg.dragType = "t2n";
       window.addEventListener('mousemove', tracer, false);
     }
   }, false);
@@ -693,7 +687,6 @@ const MouseGesture = (function() {
         Fn[cfg.t2n[track].name](cfg.t2n[track].arg);
       }
     }
-    // console.log(track);
   }, false);
 
   //left click ==> drag
@@ -719,28 +712,9 @@ const MouseGesture = (function() {
     canvas.removeEventListener("dragover", allowDrop, false);
     reset();
     isDrag = false;
-    if (track !== "") {
+    if (track !== "" && cfg[cfg.dragType].hasOwnProperty(track)) {
       // dragType + track => function
-      // console.log(dObj);
-      switch (cfg.dragType) {
-        case "text":
-          if (cfg.dt2n.hasOwnProperty(track)) {
-            Fn[cfg.dt2n[track].name](cfg.dt2n[track].arg);
-          }
-          break;
-        case "link":
-          if (cfg.dl2n.hasOwnProperty(track)) {
-            Fn[cfg.dl2n[track].name](cfg.dl2n[track].arg);
-          }
-          break;
-        case "image":
-          if (cfg.di2n.hasOwnProperty(track)) {
-            Fn[cfg.di2n[track].name](e,cfg.di2n[track].arg);
-          }
-          break;
-        default:
-          break;
-      }
+      Fn[cfg[cfg.dragType][track].name](cfg[cfg.dragType][track].arg);
     }
   }, false);
 
@@ -752,39 +726,48 @@ const MouseGesture = (function() {
     if (nodetype === 3) {
       let isLink = e.target.parentNode.href;
       if (cfg.dragtext && !isLink) {
-        cfg.dragType = "text";
+        // cfg.dragType = "text";
+        cfg.dragType = "dt2n";
       } else if (isLink) { //use regular express to match?
         e = e.target.parentNode;
-        cfg.dragType = "link";
+        cfg.dragType = "dl2n";
+        // cfg.dragType = "link";
       }
     }
     if (nodetype === 1) {
       if (e.target.value && cfg.dragtext && cfg.draginput) {
-        cfg.dragType = "text";
+        cfg.dragType = "dt2n";
+        // cfg.dragType = "text";
       } else if (e.target.href) {
         if (window.getSelection().toString() == "" || e.target.textContent.length > window.getSelection().toString().lenght) {
           if (cfg.draglink) {
-            cfg.dragType = "link";
+            cfg.dragType = "dl2n";
+            // cfg.dragType = "link";
           }
         } else {
           if (cfg.dragtext) {
-            cfg.dragType = "text";
+            cfg.dragType = "dt2n";
+            // cfg.dragType = "text";
           }
         }
         if (!cfg.dragtext && cfg.draglink) {
-          cfg.dragType = "link";
+          cfg.dragType = "dl2n";
+          // cfg.dragType = "link";
         }
       } else if (e.target.src) {
         if (e.target.parentNode.href) {
           if (cfg.dragimage && (e[cfg.imgfirst + "Key"] || cfg.imgfirstcheck)) {
-            cfg.dragType = "image";
+            cfg.dragType = "di2n";
+            // cfg.dragType = "image";
           } else if (cfg.draglink) {
-            cfg.dragType = "link";
+            cfg.dragType = "dl2n";
+            // cfg.dragType = "link";
             e = e.target.parentNode;
           }
 
         } else if (cfg.dragimage) {
-          cfg.dragType = "image";
+          cfg.dragType = "di2n";
+          // cfg.dragType = "image";
         }
       }
 
@@ -798,7 +781,7 @@ const MouseGesture = (function() {
     dObj.text = window.getSelection().toString() || e.target.innerHTML;
     dObj.link = e.href || e.target.href;
     dObj.img = e.target.src;
-    if (cfg.setdragurl && cfg.dragType == "text") {
+    if (cfg.setdragurl && cfg.dragType == "dt2n") {
       var tolink;
       if (dObj.text.indexOf("http://") != 0 && dObj.text.indexOf("https://") != 0 && dObj.text.indexOf("ftp://") != 0 && dObj.text.indexOf("rtsp://") != 0 && dObj.text.indexOf("mms://") != 0 && dObj.text.indexOf("chrome-extension://") != 0 && dObj.text.indexOf("chrome://") != 0) {
         tolink = "http://" + dObj.text;
@@ -807,7 +790,7 @@ const MouseGesture = (function() {
       }
       var urlreg = /^((chrome|chrome-extension|ftp|http(s)?):\/\/)([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
       if (urlreg.test(tolink)) {
-        cfg.dragType = "link";
+        cfg.dragType = "dl2n";
         dObj.link = tolink;
       }
     }
@@ -869,6 +852,7 @@ const MouseGesture = (function() {
       .MPcontent > li[data-type=di2n] span:first-child{background:#4DB79830!important;color:#4DB798!important;}
       .MPcontent > li span:first-child{text-align:left!important;font-size:18px!important;font-weight:bold!important;padding:2px 10px!important;width:auto!important;height:24px!important;float:left!important;border-left:10px solid!important;margin-right:20px!important;}
       #mg2>li>span{margin-bottom:10px!important;}
+      #mg2>li>span:nth-child(3)>input {font-family: MParrow;}
       #mg2 > li span:nth-child(5),
       .MPcontent > li span:nth-child(6),
       .MPcontent > li span:nth-child(7){max-height:30px!important;margin-bottom:100px!important;white-space:nowrap!important;}
@@ -956,7 +940,7 @@ const MouseGesture = (function() {
       tips: ['说明', 'Description'],
       addFunction: ['增加一个功能', 'Add Function'],
       //setting prefix: SET => SET + functionName + Item
-      mg1title1ITEM:['界面','UI'],
+      mg1title1ITEM:       ['界面',                           'UI'],
       maxLineWidthITEM:    ['轨迹宽度',                       'Line Width'],
       maxLineWidthDESC:    ['鼠标轨迹最大宽度,单位"px"',      'Mouse Track Max. Line Width'],
       lineGrowthITEM:      ['轨迹增长',                       'Line Grow'],
@@ -1163,7 +1147,7 @@ const MouseGesture = (function() {
       }
     },
     letter2arrow = function(str){
-      return str.replace(/[^uUdDlLrR⬅➡⬇⬆]/g, '').replace(/[lL]/g, '⬅').replace(/[rR]/g, '➡').replace(/[dD]/g, '⬇').replace(/[uU]/g, '⬆');
+      return str.replace(/[^uUdDlLrR4682]/g, '').replace(/[lL]/g, '4').replace(/[rR]/g, '6').replace(/[dD]/g, '8').replace(/[uU]/g, '2');
     },
     onOff = function(e) {
       cfg[e.target.id] = e.target.checked;
@@ -1245,7 +1229,7 @@ const MouseGesture = (function() {
     txt += makeDefinedFunsList('di2n');
     txt += '</div>';  //#mg2 end
     //#mg3
-    txt += '<div id="mg3" class="MPcontent"><a href="https://github.com/woolition/greasyforks/blob/master/mouseGesture/HY-MouseGesture.md" style="display:block;width: 90%;height: auto;font-size: 40px!important;text-decoration: none;font-weight: bolder;padding: 30px 30px; color:yellowgreen;">手势输入:<br>u or U: ⬆<br>r or R: ➡<br> d or D: ⬇<br> l or L: ⬅<br><br>(●￣(ｴ)￣●)づ <br>点我看更多介绍! </a></div>';
+    txt += '<div id="mg3" class="MPcontent"><a href="https://github.com/woolition/greasyforks/blob/master/mouseGesture/HY-MouseGesture.md" style="display:block;width: 90%;height: auto;font-family:MParrow;font-size: 40px!important;text-decoration: none;font-weight: bolder;padding: 30px 30px; color:yellowgreen;">手势输入:<br>u or U: 2<br>r or R: 6<br> d or D: 8<br> l or L: 4<br><br>(●￣(ｴ)￣●)づ <br>点我看更多介绍! </a></div>';
 
     settingDiv = document.createElement('div');
     settingDiv.id = "MPsetting";
