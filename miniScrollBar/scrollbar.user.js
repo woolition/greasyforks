@@ -8,6 +8,7 @@
 // @author       黄盐
 // @include      *
 // @run-at       document-start
+// @compatible chrome
 // @grant        none
 // ==/UserScript==
 ;
