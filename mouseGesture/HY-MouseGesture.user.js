@@ -4,7 +4,7 @@
 // @namespace      https://greasyfork.org/users/104201
 // @description    HY's mouse gesture script,supports ringt-key draw track functions and left-key drag functions.Drag target can be [Text] & [Links] & [Image]  Customizenable → Right click to draw ⇄(left,right) to setting
 // @description:zh-CN  鼠标手势脚本,就是这么拽:支持右键轨迹手势和左键拖拽功能.可以拖拽[文本],[链接]和[图片],支持自定义设置:鼠标画➡⬅(右左)路径,进入设置
-// @version      1.5
+// @version      1.6
 // @include      *
 // @noframes
 // @run-at       document-end
@@ -129,7 +129,7 @@ const MouseGesture = (function() {
     di2n: {
       saveImg:         ['保存图片',         'Save Image'],
       searchImg:       ['搜索图片',         'Search Image'],
-      // copyImage:       ['复制图片',         'Copy Image to ClickBoard'],
+      copyImage:       ['复制图片',         'Copy Image to ClickBoard'],
       copyImgURL:      ['复制图片链接',     'Copy ImageURL'],
       openImgNewTab:   ['新标签打开图片',   'Open Image in New Tab'],
       image2DataURL:   ['复制图片为DataURL','Copy Image as DataURL'],
@@ -197,7 +197,6 @@ const MouseGesture = (function() {
         d.id = "MicrosoftTranslatorWidget";
         d.style.cssText = 'visibility:hidden;';
         d.setAttribute('class', 'Lignt');
-        // let src =
         let s = document.createElement('script');
         s.type = 'text/javascript';
         s.charset = 'UTF-8';
@@ -543,6 +542,27 @@ const MouseGesture = (function() {
       mime: mimeType
     };
   }
+  // function canvasDrawTheImage(e) {
+  //   // let img = e.target,
+  //   var img=new Image;
+  //   img.onload=function(){
+  //     var canvas=document.createElement("canvas");
+  //     canvas.width = getNaturalSize(img).width;
+  //     canvas.height = getNaturalSize(img).height;
+  //     var g=canvas.getContext("2d",{alpha:true});
+  //     g.drawImage(img,0,0);
+  //     console.log(canvas.toDataURL());
+  //   };
+  //   img.crossOrigin="anonymous"; //关键
+  //   img.src=dObj.img;
+  //   return {
+  //     canvas: canvas,
+  //     type: 'png',
+  //     // type: fileType,
+  //     mime: 'image/png'
+  //     // mime: mimeType
+  //   };
+  // }
   // get image natural width and height
   function getNaturalSize(ele) {
     let i, w, h;
@@ -714,7 +734,7 @@ const MouseGesture = (function() {
     isDrag = false;
     if (track !== "" && cfg[cfg.dragType].hasOwnProperty(track)) {
       // dragType + track => function
-      Fn[cfg[cfg.dragType][track].name](cfg[cfg.dragType][track].arg);
+      Fn[cfg[cfg.dragType][track].name](event,cfg[cfg.dragType][track].arg);
     }
   }, false);
 
