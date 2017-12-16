@@ -2,9 +2,12 @@
 
 ## 效果 (Preview)
 - 启用前(Before)
-<img src ="https://github.com/woolition/greasyforks/raw/master/img/miniScrollbar2.png" >
+
+![启用前(Before) image](https://github.com/woolition/greasyforks/raw/master/img/miniScrollbar2.png)
+
 - 启用后(After)
-<img src ="https://github.com/woolition/greasyforks/raw/master/img/miniScrollbar1.png" >
+
+![启用后(After) image](https://github.com/woolition/greasyforks/raw/master/img/miniScrollbar1.png)
 
 ### V 0.2 [2017-12-16]
 
