@@ -2,7 +2,7 @@
 // @name         Mini-ScrollBar
 // @name:zh-CN   迷你滚动条
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      0.1
+// @version      0.2
 // @description  Make scroll bar mini.
 // @description:zh-CN  滚动条迷你化。
 // @author       黄盐
@@ -16,21 +16,24 @@
   'use strict';
   const scrollbarWidth = 8,
     thumbBorderWidth = 1,
+    thumbBorderColor = "rgba(255, 255, 255, 0.4)",
     scrollbarMouseOverColor = 'rgba(128, 128, 128, 0.2)',
     thumbColor = 'rgba(0, 0, 0, 0.4)',
     thumbMouseOverColor = 'rgba(0, 0, 0, 0.8)';
   let a = document.createElement('style');
   a.textContent = `
+  <!--
 ::-webkit-scrollbar{
 width: ${scrollbarWidth}px !important;
 height: ${scrollbarWidth}px !important;
 background:transparent;
+filter: invert();
 }
 ::-webkit-scrollbar:hover {
 background: ${scrollbarMouseOverColor};
 }
 ::-webkit-scrollbar-thumb {
-border: ${thumbBorderWidth}px solid transparent !important;
+border: ${thumbBorderWidth}px solid ${thumbBorderColor} !important;
 background-color: ${thumbColor} !important;
 z-index: 2147483647;
 -webkit-border-radius: 12px;
@@ -46,7 +49,13 @@ background-color: ${thumbMouseOverColor} !important;
 ::-webkit-scrollbar-thumb:active {
 background-color: rgba(0, 0, 0, 0.6) !important
 }
+-->
 `;
-  let doc = document.body || document.documentElement;
+  let doc;
+  if (location.origin === "file://") {
+    doc = document.head || document.documentElement;
+  } else {
+    doc = document.body || document.documentElement;
+  }
   doc.appendChild(a);
 })();
