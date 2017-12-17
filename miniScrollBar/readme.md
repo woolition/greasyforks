@@ -9,6 +9,12 @@
 
 ![启用后(After) image](https://github.com/woolition/greasyforks/raw/master/img/miniScrollbar1.png)
 
+### V 0.3 [2017-12-16]
+
+- GreasyFork 搜索优化
+
+- GreasyFork Search Optimize
+
 ### V 0.2 [2017-12-16]
 
 - 增加 滑块 边框颜色, 以便黑色背景下更好显示滚动条

@@ -1,10 +1,8 @@
 // ==UserScript==
-// @name         Mini-ScrollBar
-// @name:zh-CN   迷你滚动条
+// @name         迷你滚动条(Mini ScrollBar)
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      0.2
-// @description  Make scroll bar mini.
-// @description:zh-CN  滚动条迷你化。
+// @version      0.3
+// @description  滚动条迷你化.(Make scroll bar mini.)
 // @author       黄盐
 // @include      *
 // @run-at       document-start

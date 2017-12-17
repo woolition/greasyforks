@@ -1,15 +1,13 @@
 # 破解VIP会员视频集合
 
-## ☢关于 Firefox Quantum 脚本无法使用☢
->新版本的火狐 非常好用,必须承认 (～￣▽￣)～
-
->但是 **GreasyMonkey** 的用户,你的脚本很可能不能用.因为作者未及时更新插件,导致 **<code>GM_getValue</code>** 出现未定义错误
-
->(●￣(ｴ)￣●) づ 建议安装 Tampermonkey 保平安!!! [ 点击这里 安装Tampermonkey](https://addons.mozilla.org/zh-CN/firefox/addon/tampermonkey/)
-
+>(●￣(ｴ)￣●) づ Firefox用户: 推荐 [安装 Tampermonkey ](https://addons.mozilla.org/zh-CN/firefox/addon/tampermonkey/) 或者 [安装 ViolentMonkey ](https://addons.mozilla.org/zh-CN/firefox/addon/violentmonkey/)
 
 ### 新版本有Bug?
->新版本的非常不好用怎么办(◔ ‸◔)？往下↓↓↓看，找到最近的历史版本，先恢复使用，等稳定了再升级。
+>新版本的非常不好用怎么办(◔ ‸◔)
+
+>[访问我的GitHub](https://github.com/woolition/greasyforks/tree/master/hackVipVideosSet) → 找到最近的历史版本 → 点击进入代码页面 → 点击[Raw]按钮安装。
+
+>先恢复使用，等稳定了再升级。
 
 ### 点解搞这个(◔ ◡◔)？
 >可能是因为其他的脚本样子太丑，出现不稳定，跳转控制不方面等原因。
@@ -79,6 +77,10 @@
 * 3.1.0版本地址：https://pan.baidu.com/s/1qXIVRQW
 
 ### 历史
+4.2.0   2017-12-17
+
+>1.兼容 Firefox 57+ | Greasymonkey 4.0+
+
 4.1.2   2017-11-18
 
 >1.优化代码
