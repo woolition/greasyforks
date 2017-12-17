@@ -3,6 +3,7 @@
 >(●￣(ｴ)￣●) づ Firefox用户: 推荐 [安装 Tampermonkey ](https://addons.mozilla.org/zh-CN/firefox/addon/tampermonkey/) 或者 [安装 ViolentMonkey ](https://addons.mozilla.org/zh-CN/firefox/addon/violentmonkey/)
 
 <h3 style="color:red"><b>V4.1.2 升级到V 4.2.0</b></h3>
+
 >新版本功能死活都用不了(◔ ‸◔) ?
 
 >删除脚本(清存储数据),再重新安装即可。
