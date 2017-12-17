@@ -2,12 +2,15 @@
 
 >(●￣(ｴ)￣●) づ Firefox用户: 推荐 [安装 Tampermonkey ](https://addons.mozilla.org/zh-CN/firefox/addon/tampermonkey/) 或者 [安装 ViolentMonkey ](https://addons.mozilla.org/zh-CN/firefox/addon/violentmonkey/)
 
+<h3 style="color:red"><b>V4.1.2 升级到V 4.2.0</b></h3>
+>新版本功能死活都用不了(◔ ‸◔) ?
+
+>删除脚本(清存储数据),再重新安装即可。
+
 ### 新版本有Bug?
 >新版本的非常不好用怎么办(◔ ‸◔)
 
->[访问我的GitHub](https://github.com/woolition/greasyforks/tree/master/hackVipVideosSet) → 找到最近的历史版本 → 点击进入代码页面 → 点击[Raw]按钮安装。
-
->先恢复使用，等稳定了再升级。
+>[访问我的GitHub](https://github.com/woolition/greasyforks/tree/master/hackVipVideosSet) → 找到最近的历史版本 → 点击进入代码页面 → 点击[Raw]按钮安装旧版本。先恢复使用，等稳定了再升级。
 
 ### 点解搞这个(◔ ◡◔)？
 >可能是因为其他的脚本样子太丑，出现不稳定，跳转控制不方面等原因。
