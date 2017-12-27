@@ -19,6 +19,12 @@
 
 ![About Edit Styles image](https://github.com/woolition/greasyforks/raw/master/img/styleslite3.png)
 
-## Welcome to fork / pull request !!!
+### Not Good Enough:
 
-## You have good idea? Welcome to open issues ... (-_^)
+Some styles may paticulary fit chrome/firefox/..., but this script just install the default style, without
+checking the paticular one.
+These may be add to SL in later versions.
+
+### Welcome to fork / pull request !!!
+
+### You have good idea? Welcome to open issues ... (^_<)
