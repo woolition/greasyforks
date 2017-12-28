@@ -19,6 +19,16 @@
 
 ![About Edit Styles image](https://github.com/woolition/greasyforks/raw/master/img/styleslite3.png)
 
+## How to install styles?
+
+- Install From Server:
+> In some cases, install styles from page not work correctlly, you can try to install form Server.
+![Install From Server image](https://github.com/woolition/greasyforks/raw/master/img/styleslite4.png)
+
+- Install From Page:
+> In some cases, install styles from server not work correctlly, you can try to install form page's css code.
+![Install From Page image](https://github.com/woolition/greasyforks/raw/master/img/styleslite5.png)
+
 ### Not Good Enough:
 
 Some styles may paticulary fit chrome/firefox/..., but this script just install the default style, without

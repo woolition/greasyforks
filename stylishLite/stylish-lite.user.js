@@ -3,7 +3,7 @@
 // @name:zh-CN         Stylish 轻捷
 // @namespace          https://greasyfork.org/zh-CN/users/104201
 // @icon               data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkBAMAAACCzIhnAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAFVBMVEUAAAA0mNsuzHHnTDw0mNvznBL////Mp1gEAAAAAnRSTlMAQABPjKgAAAABYktHRAZhZrh9AAAAB3RJTUUH4QwXBjotfQkeHgAAAElJREFUWMPtyzERgEAQBLBjwAAOGCy8BQTQ4N8KBvYovyHpU2d2VK0jK0VRFEWZW1pKU5Y9+yjblSmK8tPSU3J5sltRFEVR5pYXL1PRF3j4eAwAAAAASUVORK5CYII=
-// @version            0.2
+// @version            0.3
 // @description        Install and Manage user styles,Just like Stylish.Of course, Edit included.
 // @description:zh-CN  像Stylish一样:安装和管理用户样式,当然,也包括编辑
 // @author             黄盐(Foowon)
@@ -227,6 +227,7 @@
       let doc = document.body || document.documentElement;
       $(doc).after($(`<style id="${id}" type="text/css"><!--\n${cssStr}\n--></style>`));
     } catch(e) {
+      // let head = document.documentElement || document.head;
       let head = document.head || document.documentElement;
       $(head).after($(`<style id="${id}" type="text/css"><!--\n${cssStr}\n--></style>`));
     }
@@ -284,15 +285,19 @@
           setTimeout(utorg.createButton, 500);
           return;
         }
-        let a = $('div#buttons').children().first().before(`<div id="SLInstall" style="display:flex;flex-direction:row;align-items:center;justify-content:center;border-radius:4px;background-color:#2ECC71;box-shadow:0 6px 16px 0 rgba(80, 178, 243, 0.35);color:white;font-size:16px;cursor:pointer;font-weight:bold;width:173px;height:48px;margin-left:9px;"><div id="SLBtnIcon" class="${buttonClass}" style="font:30px;margin-right:10px;"></div><div>${buttonText}</div></div>`);
+        let serverInstallButtonHTML = `<div id="%%BUTTONID%%" style="height:48px;background-color:#2ECC71;display:flex;flex-direction:row;align-items:center;justify-content:center;border-radius:4px;border: solid 1px #cdcfd1;box-shadow:0 6px 16px 0 rgba(80, 178, 243, 0.35);color:white;font-size:16px;cursor:pointer;font-weight:bold;width:173px;margin-left:9px;" title="%%BUTTONTITLE%%"><div name="SLBtnIcon" class="%%BUTTONCLASS%%" style="font:30px;margin-right:10px;"></div><div>%%BUTTONTEXT%%</div></div>`;
+        let pageInstallButtonHTML = serverInstallButtonHTML.replace('style="height:48px;background-color:#2ECC71;','style="height:43px;background-color:#3498DB;margin-top:30px;');
+        let a = $('div#buttons').children().first().before(serverInstallButtonHTML.replace('%%BUTTONID%%','SLInstallFromServer').replace('%%BUTTONCLASS%%',buttonClass).replace('%%BUTTONTEXT%%',buttonText).replace('%%BUTTONTITLE%%','Install From Server'));
+        let b = $('.css_button').after(pageInstallButtonHTML.replace('%%BUTTONID%%','SLInstallFromPage').replace('%%BUTTONCLASS%%',buttonClass).replace('%%BUTTONTEXT%%',buttonText).replace('%%BUTTONTITLE%%','Install From This Page'));
 
-        $('#SLInstall').off();
-        $('#SLInstall').on('click', utorg.getRawCss);
+        $('#SLInstallFromServer,#SLInstallFromPage').off();
+        $('#SLInstallFromServer').on('click', utorg.installFromServer);
+        $('#SLInstallFromPage').on('click', utorg.installFromPage);
         // $('#SLInstall').on('click', utorg.install);
       }
     },
     // get raw text from userstyles.org
-    getRawCss: function(){
+    installFromServer: function(){
       let url = 'https://userstyles.org/styles/'+(location.href.match(/\/\d{2,}\//)[0].slice(1,-1))+'.css';
       GM_xmlhttpRequest({
         method:'GET',
@@ -308,6 +313,10 @@
           utorg.installFail('timeout');
         }
       });
+    },
+    installFromPage: function(){
+      utorg.css = $('#stylish-code').text();
+      utorg.install();
     },
     install: function(){
       let rawCss = utorg.css;
@@ -331,9 +340,8 @@
       };
       styles[name] = stylesObj;
       GM_setValue('styles',styles);
-      $('#SLBtnIcon').attr('class','slCheck');
-      $('#SLBtnIcon').next().text('Installed');
-      // $('#SLInstall').text('Installed');
+      $('div[name=SLBtnIcon]').attr('class','slCheck');
+      $('div[name=SLBtnIcon]').next().text('Installed');
     },
     installFail: function(msg){
       let ptl = 'Install Style Failed, Please Try Again Later!!!';
@@ -823,3 +831,19 @@
 
 
 })();
+
+/*
+后续改进方向:
+1.  加入对浏览器内核的验证(或者让用户直接选.),并且取回有针对性的样式.
+    比如某个Style 的id是12770, Chrome版本的Stylish第一步会取回 xxx.12770.css,
+    第二步似乎是一个回应服务器的信息.
+    第三步会取回 xxx/chrome/12770.json
+    这json 里面的 sections 字段 就可能包含有针对特定浏览器的优化代码.
+
+    其实,另外一方面,返回的 json 已经把 块 分割好,也省去了 我在这边再分拆的麻烦.
+2.  优化一些体验性细节.以便增加脚本吸引力.
+3.  至于适配Greasymonkey嘛,暂时不考虑了.
+4.  可以把样式管理页面的链接,适配为直接的更新升级按钮
+5.  可以考虑加入样式的缩略图功能. 这样样式管理,可以有列表视图 和 块视图两种选择.更加人性化一些.
+
+*/
