@@ -3,7 +3,7 @@
 // @name:zh-CN         Stylish 轻捷
 // @namespace          https://greasyfork.org/zh-CN/users/104201
 // @icon               data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkBAMAAACCzIhnAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAFVBMVEUAAAA0mNsuzHHnTDw0mNvznBL////Mp1gEAAAAAnRSTlMAQABPjKgAAAABYktHRAZhZrh9AAAAB3RJTUUH4QwXBjotfQkeHgAAAElJREFUWMPtyzERgEAQBLBjwAAOGCy8BQTQ4N8KBvYovyHpU2d2VK0jK0VRFEWZW1pKU5Y9+yjblSmK8tPSU3J5sltRFEVR5pYXL1PRF3j4eAwAAAAASUVORK5CYII=
-// @version            0.3
+// @version            0.4
 // @description        Install and Manage user styles,Just like Stylish.Of course, Edit included.
 // @description:zh-CN  像Stylish一样:安装和管理用户样式,当然,也包括编辑
 // @author             黄盐(Foowon)
@@ -32,8 +32,10 @@
 //===============PART ① Add Styles To Tabs======================================//
   const applyCssId = 'stylishLite';const SLSpliter = '\n<<<===SL===>>>\n';
   const ruleReg = /(url|url-prefix|domain|regexp)\(['"]?.*\)/;
-  const blockBeginReg = /@\s*(-moz-document|media|keyframes).+/g;
+  const blockBeginReg = /@\s*(-moz-document|media|keyframes).[^{]+/g;
+  // const blockBeginReg = /@\s*(-moz-document|media|keyframes).+/g;
   const blockEndReg = /\}[^{]*\}/g;
+  const commentReg = /\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/g;
   // parser: use to process rawText form userstyles.org/styles/*
   // use to save styles in manage panel
   let parser={
@@ -147,13 +149,15 @@
       };
     },
     // str: striing block form split(rawStr)
-    // @-moz-document rul(....) \n xxxxx....
+    // @-moz-document rule(....) \n xxxxx....
     getCss: function(str, edit){
       let string = $.trim(str),
-      ruleLine = string.match(/@-moz-document.+/);
+      //eat comments
+      ruleLine = string.match(/@-moz-document.[^{}]+/);
+      // ruleLine = string.match(/@-moz-document.+/);
       if(ruleLine === null) return string;
       let css='',
-      rules = ruleLine[0].match(/(url|url-prefix|regexp|domain)\((\S)+\)/g);
+      rules = ruleLine[0].replace(commentReg, '').match(/(url|url-prefix|regexp|domain)\((\S)+\)/g);
       if(edit || parser.checkMatch(rules)) css = string.slice(ruleLine[0].length +2, -2).replace(/\n  /g,'\n');
       return $.trim(css);
     },

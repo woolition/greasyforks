@@ -22,11 +22,13 @@
 ## How to install styles?
 
 - Install From Server:
-> In some cases, install styles from page not work correctlly, you can try to install form Server.
+> In some cases, install styles from page may not work correctlly, you can try to install form Server.
+
 ![Install From Server image](https://github.com/woolition/greasyforks/raw/master/img/styleslite4.png)
 
 - Install From Page:
-> In some cases, install styles from server not work correctlly, you can try to install form page's css code.
+> In some cases, install styles from server may not work correctlly, you can try to install form page's css code.
+
 ![Install From Page image](https://github.com/woolition/greasyforks/raw/master/img/styleslite5.png)
 
 ### Not Good Enough:
@@ -36,5 +38,15 @@ checking the paticular one.
 These may be add to SL in later versions.
 
 ### Welcome to fork / pull request !!!
-
 ### You have good idea? Welcome to open issues ... (^_<)
+### History:
+- V 0.4 ::  fix `multi-line rule` style not working
+
+like
+
+    @-moz-document url-prefix(http://), url-prefix(https://), url-prefix(ftp://), url-prefix(file://), url(about:blank),
+    /* Best effort to exclude about pages that conflict with Australis-native styling   */
+    regexp("about:(?!addons|app-manager|config|customizing|stylish-edit|downloads|permissions|preferences|sync-tabs|webrtc).*")
+    /*url-prefix("about:neterror")*/
+    /* url-prefix("about:"),   */
+now, it can work correctly.

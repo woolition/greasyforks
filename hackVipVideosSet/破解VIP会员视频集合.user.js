@@ -89,24 +89,25 @@
   userApisOn;      /*是否加载自定义解析接口*/
   GMaddStyle(`
     /*TMHY:TamperMonkeyHuanYan*/
-    #TMHYd{z-index:999999; position:absolute; left:0px; top:0px; width:100px; height:auto; border:0; margin:0;}/*TMHYdiv*/
-    #TMHYvideoContainer{z-index: 999998; background: rgba(0, 0, 0, .7); position: fixed; top: 15%; left:5%; height: 65%; width: 65%;resize:both;overflow:auto; box-shadow: 2px 2px 5px 5px rgba(255,255,0,.8)}/*TMHYVideoContainer*/
-    #TMHYvideoContainer button{position:absolute;top:2px;font-family:Arial;cursor:pointer;visibility:hidden;font-size:35px;color:#fff;background:transparent;border:0;text-shadow:0 0 2px #000;}
+    #TMHYvideoContainer{z-index:999998;background:rgba(0,0,0,.7);position:fixed;top:7em;left:5em;height:65%;width:65%;resize:both;overflow:auto;box-shadow:2px 2px 5px 5px rgba(255,255,0,.8);}
+    /*TMHYVideoContainer*/
+    #TMHYvideoContainer button{position:absolute;top:.1em;cursor:pointer;visibility:hidden;font-size:3em;color:#fff;background:transparent;border:0;}
     #TMHYvideoContainer:hover button{visibility:visible;}
     #TMHYvideoContainer:hover button:hover{color:#ff0;}
-    #TMHYiframe{height: 100%; width: 100%; overflow: auto; position:absolute; top: 0; left: 0; margin: auto; border: 0; box-shadow: 0 0 3em rgba(0, 0, 0, .4); z-index: -1; }/*TMHYIframe*/
-    #TMHYul{position:fixed;top:80px; left:0px;}
+    #TMHYiframe{height:100%;width:100%;overflow:auto;position:absolute;top:0;left:0;margin:auto;border:0;box-shadow:0 0 3em rgba(0,0,0,.4);z-index:-1;}
+    /*TMHYIframe*/
+    #TMHYul{position:fixed;top:5em;left:0;padding:0;z-index:999999;}
     #TMHYul li{list-style:none;}
     #TMHYul svg{float:right;}
-    .TM1{opacity:0.3; position:relative;padding: 0 7px 0 0; min-width: 19px; cursor:pointer;}
+    .TM1{opacity:0.3;position:relative;padding-right:.5em;width:1.5em;cursor:pointer;}
     .TM1:hover{opacity:1;}
-    .TM1 span{display:block; border-radius:0 5px 5px 0; background-color:#ffff00; border:0; font:bold 15px "微软雅黑" !important; color:#ff0000; margin:0; padding:15px 2px;}
-    .TM3{position:absolute; top:0; left:19px; display:none; border-radius:5px; margin:0; padding:0;}
-    .TM3 li{float:none; width:90px; margin:0; font-size:14px; padding:3px 10px 2px 15px; cursor:pointer; color:#3a3a3a !important; background:rgba(255,255,0,0.8)}
-    .TM3 li:hover{color:white !important; background:rgba(0,0,0,.8);}
-    .TM3 li:last-child{border-radius: 0 0 5px 5px;}
-    .TM3 li:first-child{border-radius: 5px 5px 0 0;}
-    .TM1:hover .TM3{display:block}
+    .TM1 span{display:block;border-radius:0 .3em .3em 0;background-color:#ffff00;border:0;font:bold 1em "微软雅黑"!important;color:#ff0000;margin:0;padding:1em .3em;}
+    .TM3{position:absolute;top:0;left:1.5em;display:none;border-radius:.3em;margin:0;padding:0;}
+    .TM3 li{float:none;width:7em;margin:0;font-size:.9em;padding:.15em 1em;cursor:pointer;color:#3a3a3a!important;background:rgba(255,255,0,0.8);}
+    .TM3 li:hover{color:white!important;background:rgba(0,0,0,.8);}
+    .TM3 li:last-child{border-radius:0 0 .35em .35em;}
+    .TM3 li:first-child{border-radius:.35em .35em 0 0;}
+    .TM1:hover .TM3{display:block;}
     /*自定义解析接口,本页播放窗口设置*/
     .TMHYp {position:fixed;top:20%;left:20%;z-index:999999;background:yellow;padding:30px 20px 10px 20px;border-radius:10px;text-align:center;}/*TMHYpanel*/
     .TMHYp * {font-size:16px;background:rgba(255,255,0,1);font-family:'微软雅黑';color:#3a3a3a;border-radius:10px;}
@@ -233,28 +234,30 @@
   function rightEpsLinkCheck() {
     episodes = q("#realLinkChekbx").checked;
     GMsetValue("episodes", episodes);
-    if (episodes) {
-      q('#widget-dramaseries').addEventListener('click', function getLink(e) {
-      //-------------iqiyi剧集真实播放页面方法  Begin------------------
-      //Code piece infomation:
-      //License:MIT   Author:hoothin  Homepage: http://hoothin.com  Email: rixixi@gmail.com
-        var target = e.target.parentNode.tagName == "LI" ? e.target.parentNode : (e.target.parentNode.parentNode.tagName == "LI" ? e.target.parentNode.parentNode : e.target.parentNode.parentNode.parentNode);
-        if (target.tagName != "LI") return;
-        GM_xmlhttpRequest({
-          method: 'GET',
-          url: "http://cache.video.qiyi.com/jp/vi/" + target.dataset.videolistTvid + "/" + target.dataset.videolistVid + "/?callback=crackIqiyi",
-          onload: function(result) {
-            var crackIqiyi = function(d) {
-              location.href = d.vu;
-            };
-            eval(result.responseText);
-          }
+    try {
+      if (episodes) {
+        q('#widget-dramaseries').addEventListener('click', function getLink(e) {
+        //-------------iqiyi剧集真实播放页面方法  Begin------------------
+        //Code piece infomation:
+        //License:MIT   Author:hoothin  Homepage: http://hoothin.com  Email: rixixi@gmail.com
+          var target = e.target.parentNode.tagName == "LI" ? e.target.parentNode : (e.target.parentNode.parentNode.tagName == "LI" ? e.target.parentNode.parentNode : e.target.parentNode.parentNode.parentNode);
+          if (target.tagName != "LI") return;
+          GM_xmlhttpRequest({
+            method: 'GET',
+            url: "http://cache.video.qiyi.com/jp/vi/" + target.dataset.videolistTvid + "/" + target.dataset.videolistVid + "/?callback=crackIqiyi",
+            onload: function(result) {
+              var crackIqiyi = function(d) {
+                location.href = d.vu;
+              };
+              eval(result.responseText);
+            }
+          });
         });
-      });
-      //-------------iqiyi剧集真实播放页面方法  End------------------
-    } else {
-      q('#widget-dramaseries').removeEventListener('click', getLink);
-    }
+        //-------------iqiyi剧集真实播放页面方法  End------------------
+      } else {
+        q('#widget-dramaseries').removeEventListener('click', getLink);
+      }
+    } catch(e) { }
   }
   /* 勾选自定义接口 */
   function addApiCheck() {

@@ -1,11 +1,11 @@
 # greasyforks 脚本介绍
 
-## Markdown Viewer 
+## Markdown Viewer
 
 MarkdownViewer.user.js 开发参考了:扩展[Markdown Viewer](https://chrome.google.com/webstore/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk)
 毕竟脚本体积太大不是好事,这里先推出第一个版本,整合了扩展 MarkdownViewer 扩展里面的
 
-markdown 转 HTML 脚本			 |marked.min.js 
+markdown 转 HTML 脚本			 |marked.min.js
 --                               |--
 GitHub markdown 样式 			 | github.css
 代码高亮样式(默认的html,js,css)	 |prism.css
@@ -28,3 +28,10 @@ GitHub markdown 样式 			 | github.css
 
 ### (  →_→)づ  [readme.md](/Markdown%20Viewer%20Lite/readme.md)
 
+## 破解VIP会员视频集合.user.js
+
+免费刷剧刷电影党必备脚本,目前集合了 GreasyFork 上大部分比较有效的接口,
+支持 爱奇艺, 优酷, 腾讯, Bilibili, 乐视, 芒果TV 等大部分常用视频的网站.
+
+另外,支持自定义解析接口, 自定义页内播放框设置等功能.
+### (  →_→)づ  [更多介绍,狠狠戳这里!!!](/Markdown%20Viewer%20Lite/readme.md)
