@@ -33,9 +33,8 @@
   const applyCssId = 'stylishLite';const SLSpliter = '\n<<<===SL===>>>\n';
   const ruleReg = /(url|url-prefix|domain|regexp)\(['"]?.*\)/;
   const blockBeginReg = /@\s*(-moz-document|media|keyframes).[^{]+/g;
-  // const blockBeginReg = /@\s*(-moz-document|media|keyframes).+/g;
   const blockEndReg = /\}[^{]*\}/g;
-  const commentReg = /\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/g;
+  const commentReg = /(?<!:)\/\/.*|\/\*(\s|.)*?\*\//g;
   // parser: use to process rawText form userstyles.org/styles/*
   // use to save styles in manage panel
   let parser={
@@ -154,7 +153,6 @@
       let string = $.trim(str),
       //eat comments
       ruleLine = string.match(/@-moz-document.[^{}]+/);
-      // ruleLine = string.match(/@-moz-document.+/);
       if(ruleLine === null) return string;
       let css='',
       rules = ruleLine[0].replace(commentReg, '').match(/(url|url-prefix|regexp|domain)\((\S)+\)/g);
@@ -196,9 +194,13 @@
               }
               break;
             default://regexp
-              if(new RegExp(ruleText).test(document.location.href)){
-                isMatch = true;
-                break LbMatch;
+              try {
+                if(new RegExp(ruleText).test(document.location.href)){
+                  isMatch = true;
+                  break LbMatch;
+                }
+              } catch(e) {
+                console.log(e);
               }
               break;
           }
