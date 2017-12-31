@@ -4,7 +4,7 @@
 // @namespace      https://greasyfork.org/users/104201
 // @description    HY's mouse gesture script,supports ringt-key draw track functions and left-key drag functions.Drag target can be [Text] & [Links] & [Image]  Customizenable → Right click to draw ⇄(left,right) to setting
 // @description:zh-CN  鼠标手势脚本,就是这么拽:支持右键轨迹手势和左键拖拽功能.可以拖拽[文本],[链接]和[图片],支持自定义设置:鼠标画➡⬅(右左)路径,进入设置
-// @version      1.6
+// @version      1.7
 // @include      *
 // @noframes
 // @run-at       document-end
@@ -387,7 +387,7 @@ const MouseGesture = (function() {
       }
     },*/
 
-    searchText: function(arr) {
+    searchText: function(evt, arr) {
       //get text
       let txt = window.getSelection().toString();
       txt = encodeURIComponent(txt);
@@ -734,6 +734,7 @@ const MouseGesture = (function() {
     isDrag = false;
     if (track !== "" && cfg[cfg.dragType].hasOwnProperty(track)) {
       // dragType + track => function
+      console.log(cfg[cfg.dragType][track].arg);
       Fn[cfg[cfg.dragType][track].name](event,cfg[cfg.dragType][track].arg);
     }
   }, false);
