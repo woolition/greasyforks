@@ -4,7 +4,7 @@
 // @namespace      https://greasyfork.org/users/104201
 // @description    HY's mouse gesture script,supports ringt-key draw track functions and left-key drag functions.Drag target can be [Text] & [Links] & [Image]  Customizenable → Right click to draw ⇄(right,left) to setting
 // @description:zh-CN  鼠标手势脚本,就是这么拽:支持右键轨迹手势和左键拖拽功能.可以拖拽[文本],[链接]和[图片],支持自定义设置:鼠标画➡⬅(右左)路径,进入设置
-// @version      2.1
+// @version      2.2
 // @include      *
 // @noframes
 // @run-at       document-end
@@ -80,7 +80,7 @@
               let action = cfg.gesture[data.data.gesture];
               Fn[action.name](action.arg, data.data);
             } catch(e) {
-              console.log(e);
+              // console.log(e);
             }
             break;
           case 'dragChange':
@@ -1752,8 +1752,8 @@
           dataArgObject = JSON.parse(item.dataset.arg);
           each(childrens, item=>{
             if(item.firstElementChild.value && item.firstElementChild.value !== "undefined"){
-              console.log(item.firstElementChild.nodeName);
-              console.log('updateItem..');
+              // console.log(item.firstElementChild.nodeName);
+              // console.log('updateItem..');
               if(item.firstElementChild.nodeName === "TEXTAREA")
                 argValue.push(mpEscape(item.firstElementChild.value));
               else
@@ -1765,7 +1765,7 @@
           typeObject[trk] = {name: dataArgObject.name, arg: argValue, alias:alias};
         }
       }
-      console.log(typeObject);
+      // console.log(typeObject);
       cfg[ele.dataset.type] = typeObject;
       storage.set('cfg', cfg);
     }
