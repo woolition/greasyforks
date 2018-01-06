@@ -4,10 +4,11 @@
 // @namespace      https://greasyfork.org/users/104201
 // @description    HY's mouse gesture script,supports ringt-key draw track functions and left-key drag functions.Drag target can be [Text] & [Links] & [Image]  Customizenable → Right click to draw ⇄(right,left) to setting
 // @description:zh-CN  鼠标手势脚本,就是这么拽:支持右键轨迹手势和左键拖拽功能.可以拖拽[文本],[链接]和[图片],支持自定义设置:鼠标画➡⬅(右左)路径,进入设置
-// @version      2.2
+// @version      2.3
 // @include      *
 // @noframes
 // @run-at       document-end
+// @grant        GM_addStyle
 // @grant        GM_openInTab
 // @grant        GM_setValue
 // @grant        GM_getValue
