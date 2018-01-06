@@ -169,7 +169,7 @@
     Fn = {
       userDefine: function(argumentArr, data){
         try {
-          new Function("mpArray", "mpData", decodeURI(argumentArr[0]))(data);
+          new Function("mpArray", "mpData", mpUnescape(argumentArr[0]))(data);
         } catch(e) {
           console.log(e);
         }
@@ -651,6 +651,15 @@
       return ['link', cfg.link[data.gesture]];
     else
       return ['text', cfg.text[data.gesture]];
+  }
+
+  function mpEscape(str){
+    if(!str) return;
+    return str.replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+  }
+  function mpUnescape(str){
+    if(!str) return;
+    return str.replace(/&quot;/g,'"').replace(/&apos;/g, "'");
   }
 
 //========③Hinter====================
@@ -1645,7 +1654,7 @@
           rand = Math.floor(Math.random()*1000);
           switch (agrDetail[i].slice(0,5)) {
             case 'texta':
-              html += `<span><textarea>${decodeURI(argValue[i])}</textarea><i></i></span>`;
+              html += `<span><textarea>${mpUnescape(argValue[i])}</textarea><i></i></span>`;
               break;
             case 'input':
               html += '<span><input type="text"><i></i></span>';
@@ -1746,7 +1755,7 @@
               console.log(item.firstElementChild.nodeName);
               console.log('updateItem..');
               if(item.firstElementChild.nodeName === "TEXTAREA")
-                argValue.push(encodeURI(item.firstElementChild.value));
+                argValue.push(mpEscape(item.firstElementChild.value));
               else
                 argValue.push(item.firstElementChild.value);
             } else{

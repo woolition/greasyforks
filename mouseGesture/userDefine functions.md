@@ -11,7 +11,7 @@
     /*img{position:absolute;left:0!important;top:0!important;}*/
     #mousePosition{color:red!important;position:absolute!important;text-shadow:1px 0 1px cyan!important;}
     #verticalLine{width:0!important;border-left:1px solid red!important;line-height:100!important;position:fixed!important;}
-    #horizontalLine{width:100%!important;border-top:1px solid red!important;position:fixed!important;}
+    #horizontalLine{width:100%!important;border-top:1px solid red!important;position:absolute!important;}
     `;
 
     document.body.appendChild(sty);
