@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name     破解VIP会员视频集合
 // @namespace  https://greasyfork.org/zh-CN/users/104201
-// @version    4.2.1
-// @description  一键破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。详细方法看说明和图片。包含了[破解全网VIP视频会员-去广告▶ttmsjx][VIP会员视频解析▶龙轩][酷绘-破解VIP会员视频▶ahuiabc2003]以及[VIP视频破解▶hoothin]的部分接口。[Tampermonkey | Violentmonkey | Greasymonkey 4.0+]
+// @version    4.2.2
+// @description  一键破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。详细方法看说明和图片。包含了[VIP视频在线解析破解去广告(全网)xx.xx.xx更新可用▶sonimei134][破解全网VIP视频会员-去广告▶ttmsjx][VIP会员视频解析▶龙轩][酷绘-破解VIP会员视频▶ahuiabc2003]以及[VIP视频破解▶hoothin]的部分接口。[Tampermonkey | Violentmonkey | Greasymonkey 4.0+]
 // @author     黄盐
 // @noframes
 // @match    *://*.iqiyi.com/*
@@ -35,8 +35,8 @@
 
 (() => {
   'use strict';
-  const YoukuIcon = '<svg width="20px" height="20px" viewbox="0 0 50 50"><polyline points="18,15 33,25 18,35" style="fill:none;stroke:red;stroke-width:5"/><circle cx="25" cy="25" r="20" style="stroke:#2796FE;stroke-width:5;fill:none;"/></svg>';
-  const vqqIcon = '<svg width="20px" height="20px" viewbox="0 0 50 50"><polygon points="10,5 45,25 10,45" style="fill:#34ADFB;"/><polygon points="5,10 35,25 5,40" style="fill:#ffa807;"/><polygon points="10,12 35,25 10,38" style="fill:#a3f11f;"/><polygon points="15,20 25,25 15,30" style="fill:#fff;"/></svg>';
+  const YoukuIcon = '<svg width="1.2em" height="1.2em" viewbox="0 0 72 72"><defs><circle id="youkuC1" r="5.5" style="stroke:none;;fill:#0B9BFF;"></circle><path id="youkuArow" d="m0,10 a5,5 0,0,1 0,-10 h20 a5,5 0,0,1 0,10z" style="fill:#FF4242;"></path></defs><circle cx="36" cy="36" r="30.5" style="stroke:#30B4FF;stroke-width:11;fill:none;"></circle><use x="10.5" y="19" xlink:href="#youkuC1"/><use x="61.5" y="53" xlink:href="#youkuC1"/><use x="39" y="1" transform="rotate(30)" xlink:href="#youkuArow"/><use x="-1" y="52" transform="rotate(-35)" xlink:href="#youkuArow"/></svg>';
+  const vqqIcon = '<svg height="1.2em" width="1.2em" viewbox="0 0 185 170"><defs><path id="vQQ" d="M7 20Q14 -10 55 7Q100 23 145 60Q170 80 145 102Q108 138 47 165Q15 175 4 146Q-5 80 7 20"></path></defs><use style="fill:#44B9FD;" transform="translate(27,0)" xlink:href="#vQQ"></use><use style="fill:#FF9F01;" transform="translate(0,18),scale(0.8,0.75)" xlink:href="#vQQ"></use><use style="fill:#97E61B;" transform="translate(23,18),scale(0.80.75)" xlink:href="#vQQ"></use><use style="fill:#fff;" transform="translate(50,45),scale(0.4)" xlink:href="#vQQ"></use></svg>';
   var tMscript = document.createElement('script');
   tMscript.innerText = `q = function(cssSelector){return document.querySelector(cssSelector);};qa = function(cssSelector){return document.querySelectorAll(cssSelector);};`;
   document.head.appendChild(tMscript);
@@ -103,7 +103,7 @@
     .TM1:hover{opacity:1;}
     .TM1 span{display:block;border-radius:0 .3em .3em 0;background-color:#ffff00;border:0;font:bold 1em "微软雅黑"!important;color:#ff0000;margin:0;padding:1em .3em;}
     .TM3{position:absolute;top:0;left:1.5em;display:none;border-radius:.3em;margin:0;padding:0;}
-    .TM3 li{float:none;width:7em;margin:0;font-size:.9em;padding:.15em 1em;cursor:pointer;color:#3a3a3a!important;background:rgba(255,255,0,0.8);}
+    .TM3 li{float:none;width:6em;margin:0;font-size:1em;padding:.15em 1em;cursor:pointer;color:#3a3a3a!important;background:rgba(255,255,0,0.8);}
     .TM3 li:hover{color:white!important;background:rgba(0,0,0,.8);}
     .TM3 li:last-child{border-radius:0 0 .35em .35em;}
     .TM3 li:first-child{border-radius:.35em .35em 0 0;}
@@ -138,6 +138,7 @@
     {name:"vParse"+vqqIcon,url:"https://api.vparse.org/?url=",title:"支持腾讯",intab:1},
     {name:"猫云"+vqqIcon,url:"https://jx.maoyun.tv/index.php?id=",title:"支持腾讯",intab:1},
     //{name:"FLVSP[腾讯]",url:"https://api.flvsp.com/?url=",title:"支持腾讯",intab:1},//解析源同上
+    {name:"搜你妹"+YoukuIcon,url:"http://www.sonimei.cn/?url=",title:"综合接口，VIP视频*** 更新可用【作者sonimei134】脚本的接口",intab:0},
     {name:"噗噗电影",url:"http://pupudy.com/play?make=url&id=",title:"综合接口，破解全网VIP视频会员-去广告【作者ttmsjx】脚本的接口",intab:0},
     {name:"抢先影院"+YoukuIcon,url:"http://www.qxyingyuan.vip/play?make=url&id=",title:"据说优酷比较稳定",intab:0},
     {name:"酷绘",url:"http://appapi.svipv.kuuhui.com/svipjx/liulanqichajian/browserplugin/qhjx/qhjx.php?id=",title:"综合接口，酷绘*【作者ahuiabc2003】脚本的接口",intab:0},
