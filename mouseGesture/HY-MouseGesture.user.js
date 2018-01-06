@@ -4,7 +4,7 @@
 // @namespace      https://greasyfork.org/users/104201
 // @description    HY's mouse gesture script,supports ringt-key draw track functions and left-key drag functions.Drag target can be [Text] & [Links] & [Image]  Customizenable → Right click to draw ⇄(right,left) to setting
 // @description:zh-CN  鼠标手势脚本,就是这么拽:支持右键轨迹手势和左键拖拽功能.可以拖拽[文本],[链接]和[图片],支持自定义设置:鼠标画➡⬅(右左)路径,进入设置
-// @version      2.0
+// @version      2.1
 // @include      *
 // @noframes
 // @run-at       document-end
@@ -80,7 +80,7 @@
               let action = cfg.gesture[data.data.gesture];
               Fn[action.name](action.arg, data.data);
             } catch(e) {
-              // console.log(e);
+              console.log(e);
             }
             break;
           case 'dragChange':
@@ -169,7 +169,7 @@
     Fn = {
       userDefine: function(argumentArr, data){
         try {
-          new Function("mpArray", "mpData", argumentArr[0])(argumentArr, data);
+          new Function("mpArray", "mpData", decodeURI(argumentArr[0]))(data);
         } catch(e) {
           console.log(e);
         }
@@ -1270,7 +1270,9 @@
         span.tag{color:white!important;margin:0!important;border:0!important;padding:1px 7px 3px 0!important;border-radius:4px!important;}
 
         #mg2 b{margin-left:30px;padding:0 20px;background:#0000000C!important;}
-        #mg2 div.fnArgument{display:none;padding-top:20px!important;}
+        #mg2 div.fnArgument{display:none;padding-top:20px!important;height:auto;}
+        #mg2 div.fnArgument textarea{width:100%;height:200px;}
+        #mg2 div.fnArgument span{width:auto;height:auto;}
         #mg2 .yellow{background:#FFB400!important;}
         #mg2 .yellow:before{content:"${fnLocal.FunsListTitle.gesture[cfg.language]}";}
         #mg2 .blue:before{content:"${fnLocal.FunsListTitle.link[cfg.language]}";}
@@ -1643,7 +1645,7 @@
           rand = Math.floor(Math.random()*1000);
           switch (agrDetail[i].slice(0,5)) {
             case 'texta':
-              html += `<span><textarea>${argValue[i]}</textarea><i></i></span>`;
+              html += `<span><textarea>${decodeURI(argValue[i])}</textarea><i></i></span>`;
               break;
             case 'input':
               html += '<span><input type="text"><i></i></span>';
@@ -1741,14 +1743,20 @@
           dataArgObject = JSON.parse(item.dataset.arg);
           each(childrens, item=>{
             if(item.firstElementChild.value && item.firstElementChild.value !== "undefined"){
-              argValue.push(item.firstElementChild.value);
+              console.log(item.firstElementChild.nodeName);
+              console.log('updateItem..');
+              if(item.firstElementChild.nodeName === "TEXTAREA")
+                argValue.push(encodeURI(item.firstElementChild.value));
+              else
+                argValue.push(item.firstElementChild.value);
             } else{
-              argValue.push('');
+              argValue.push(' ');
             }
           });
           typeObject[trk] = {name: dataArgObject.name, arg: argValue, alias:alias};
         }
       }
+      console.log(typeObject);
       cfg[ele.dataset.type] = typeObject;
       storage.set('cfg', cfg);
     }
