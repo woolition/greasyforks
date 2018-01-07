@@ -1,5 +1,5 @@
 # 资源网助手.user.js
-> 版本 V1.0
+> 版本 V1.1
 
 > 作者: 黄盐
 
@@ -7,12 +7,23 @@
 
 > [最大资源网](http://www.zuidazy.com/?m=vod-*)
 
-> [OK资源采集](http://www.okokzy.com/?m=vod-*)
+> [OK资源采集](http://okzyzy.com/?m=vod-*)
 
 ### 如何关闭播放器
 > **右键菜单** -> **🗙关闭播放器**
 
-### 播放器
+### 关于无法播放 ?
+
+> 由于资源站的视频大部分需要跨域,因此,你需要安装允许跨域扩展,比如[Moesif Origin & CORS Changer,](https://chrome.google.com/webstore/detail/moesif-origin-cors-change/digfbfaphojjndkpccljibejjbppifbc?utm_source=chrome-ntp-icon) 并且启用扩展
+
+> 关于OK资源网,部分连接为<b>http://bobo.okokbo.com/**.m3u8</b>的电视剧无法播放,
+目前由于站点跨域设置有些问题,如果需要看,要在CROS扩展设置:
+**`Response Headers:`** `->` **`Access-Control-Allow-Origin:`** 的值为 **`http://okzyzy.com`** 才能正常观看.
+
+>观看其他站点的时候再把:
+**`Response Headers:`** `->` **`Access-Control-Allow-Origin:`** 的值设置为 **`*`** 才能正常观看(是的,有些麻烦).
+
+### 采用的播放器
 
  <h3>[DPlayer](https://github.com/MoePlayer/DPlayer)</h3>
 <p align="center">

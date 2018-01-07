@@ -1,26 +1,33 @@
 // ==UserScript==
 // @name         资源网助手
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      1.0
+// @version      1.1
 // @description  OK资源网，最大资源网[MP4][m3u8]视频直接播放，分类页面改进翻页功能
 // @author       黄盐
 // @match        http://www.zuidazy.com/?m=vod-*
 // @match        http://www.okokzy.com/?m=vod-*
+// @match        http://okzyzy.com/?m=vod-*
 // @resource     playercss   https://cdn.bootcss.com/dplayer/1.17.3/DPlayer.min.css
 // @resource     hlsjs       https://cdn.bootcss.com/hls.js/0.8.9/hls.min.js
 // @resource     playerjs    https://cdn.bootcss.com/dplayer/1.17.3/DPlayer.min.js
 // @noframes
 // @run-at       document-end
 // @grant        GM_addStyle
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @grant        GM_getResourceText
+// @grant        GM_registerMenuCommand
 // ==/UserScript==
 /* jshint esversion: 6 */
 ;
 (function() {
+
   //适配详情页，http://*.com/?m=vod-detail-id-*.html
   if (location.search.indexOf("detail") != -1) {
     try {
       //-------> Prepare
+      //ERRC:enable right click to close
+      const ERCC = GM_getValue("ERCC", false);
       GM_addStyle(GM_getResourceText("playercss"));
       // new Function(GM_getResourceText("hlsjs"))();
       // new Function(GM_getResourceText("playerjs"))();
@@ -34,7 +41,6 @@
           videoDiv.id = "videoDiv";
           videoDiv.style.cssText = "position:fixed;top:100px;left:100px;width:60%;height:auto;";
           document.body.appendChild(videoDiv);
-          videoDiv.addEventListener('drag', this.close, true);
         };
         modul.doPlay = function() {
           let containDiv = document.querySelector('#videoDiv');
@@ -51,11 +57,30 @@
             contextmenu: [{
               text: "🗙关闭播放器",
               link: "javascript:window.zPlay.close();"
+            }, {
+              text: "启用右键关闭播放器",
+              link: "javascript:window.zPlay.toggleERCC();"
             }]
           });
-          dp.on("fullscreen",()=>{containDiv.style.cssText = "";})
-          dp.on("fullscreen_cancel",()=>{containDiv.style.cssText = "position:fixed;top:100px;left:100px;width:60%;height:auto;";})
+          dp.on("fullscreen", () => {
+            containDiv.style.cssText = "";
+          });
+          dp.on("fullscreen_cancel", () => {
+            containDiv.style.cssText = "position:fixed;top:100px;left:100px;width:60%;height:auto;";
+          });
+          if (ERCC){
+            dp.on("contextmenu_show", () => {
+              this.close();
+            });
+            GM_registerMenuCommand("禁用[右键关闭播放器]",this.toggleERCC);
+          }
           setTimeout(() => dp.play(), 100);
+        };
+        modul.toggleERCC = function(){
+          GM_setValue("ERCC", !GM_getValue("ERCC", false));
+          try {
+            document.querySelector("div.dplayer-menu").setAttribute("class", "dplayer-menu");
+          } catch(e) {}
         };
         modul.close = function() {
           document.body.removeChild(document.querySelector("#videoDiv"));
