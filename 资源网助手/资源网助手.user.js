@@ -7,6 +7,7 @@
 // @match        http://www.zuidazy.com/?m=vod-*
 // @match        http://www.okokzy.com/?m=vod-*
 // @match        http://okzyzy.com/?m=vod-*
+// @match        http://bobo.okokbo.com*
 // @resource     playercss   https://cdn.bootcss.com/dplayer/1.17.3/DPlayer.min.css
 // @resource     hlsjs       https://cdn.bootcss.com/hls.js/0.8.9/hls.min.js
 // @resource     playerjs    https://cdn.bootcss.com/dplayer/1.17.3/DPlayer.min.js
@@ -17,18 +18,29 @@
 // @grant        GM_setValue
 // @grant        GM_getResourceText
 // @grant        GM_registerMenuCommand
+// @grant        GM_openInTab
 // ==/UserScript==
 /* jshint esversion: 6 */
 ;
 (function() {
+  // if (GM_getValue("lastLink", "")) {
+  //   if(!(location.origin === "http://bobo.okokbo.com")){
+  //     GM_openInTab("http://bobo.okokbo.com",{active:true});
+  //   }
 
+  //   // return;
+  // }
   //适配详情页，http://*.com/?m=vod-detail-id-*.html
-  if (location.search.indexOf("detail") != -1) {
+  if (location.search.indexOf("detail") != -1 || (location.origin === "http://bobo.okokbo.com" && GM_getValue("lastLink", ""))) {
     try {
       //-------> Prepare
       //ERRC:enable right click to close
       const ERCC = GM_getValue("ERCC", false);
       GM_addStyle(GM_getResourceText("playercss"));
+      GM_addStyle(`
+        #videoDiv{position:fixed;top:100px;left:100px;width:60%;height:auto;}
+        .videoFullscreen{position:absolute;top:0;left:0;width:auto;height:auto;}
+        `);
       // new Function(GM_getResourceText("hlsjs"))();
       // new Function(GM_getResourceText("playerjs"))();
       eval(GM_getResourceText("hlsjs"));
@@ -39,14 +51,25 @@
         modul.init = function() {
           var videoDiv = document.createElement('div');
           videoDiv.id = "videoDiv";
-          videoDiv.style.cssText = "position:fixed;top:100px;left:100px;width:60%;height:auto;";
+          // videoDiv.style.cssText = "position:fixed;top:100px;left:100px;width:60%;height:auto;";
           document.body.appendChild(videoDiv);
         };
-        modul.doPlay = function() {
+        modul.doPlay = function(actionMark) {
           let containDiv = document.querySelector('#videoDiv');
-          let urlStr = event.target.previousElementSibling.href;
+          let urlStr = "";
+          try {
+            urlStr = event.target.previousElementSibling.href;
+            if(new URL(urlStr).origin === "http://bobo.okokbo.com"){
+              GM_setValue("lastLink",urlStr);
+              GM_openInTab("http://bobo.okokbo.com",{active:true});
+              return;
+            }
+          } catch(e) {
+            urlStr = GM_getValue("lastLink","");
+          }
+          // let urlStr = event.target.previousElementSibling.href || GM_getValue("lastLink","");
           let videoType = (urlStr.split(".").pop() === "m3u8") ? "hls" : "normal";
-          let siteColor = window.getComputedStyle(document.querySelector("div.sddm")).backgroundColor;
+          let siteColor = location.origin !== "http://bobo.okokbo.com" ? window.getComputedStyle(document.querySelector("div.sddm")).backgroundColor : "#ff0";
           let dp = new DPlayer({
             theme: siteColor,
             container: containDiv,
@@ -63,24 +86,26 @@
             }]
           });
           dp.on("fullscreen", () => {
-            containDiv.style.cssText = "";
+            // containDiv.style.cssText = "";
+            containDiv.setAttribute("class", containDiv.getAttribute("class")+" videoFullscreen");
           });
           dp.on("fullscreen_cancel", () => {
-            containDiv.style.cssText = "position:fixed;top:100px;left:100px;width:60%;height:auto;";
+            // containDiv.style.cssText = "position:fixed;top:100px;left:100px;width:60%;height:auto;";
+            containDiv.setAttribute("class", containDiv.getAttribute("class").replace(" videoFullscreen",""));
           });
-          if (ERCC){
+          if (ERCC) {
             dp.on("contextmenu_show", () => {
               this.close();
             });
-            GM_registerMenuCommand("禁用[右键关闭播放器]",this.toggleERCC);
+            GM_registerMenuCommand("禁用[右键关闭播放器]", this.toggleERCC);
           }
           setTimeout(() => dp.play(), 100);
         };
-        modul.toggleERCC = function(){
+        modul.toggleERCC = function() {
           GM_setValue("ERCC", !GM_getValue("ERCC", false));
           try {
             document.querySelector("div.dplayer-menu").setAttribute("class", "dplayer-menu");
-          } catch(e) {}
+          } catch (e) {}
         };
         modul.close = function() {
           document.body.removeChild(document.querySelector("#videoDiv"));
@@ -93,19 +118,27 @@
     span.playSpan{padding:2px 5px;color:${window.getComputedStyle(document.querySelector("div.sddm")).backgroundColor};}
     span.playSpan:hover{background:#00000010;padding:3px 10px;cursor:pointer;}
     `);
-      var lis = document.querySelectorAll("div.vodplayinfo li"); //文档中0~end 是链接项目，渲染结束后是6~end是链接项目
-      var tmp, play;
-      for (var i = 0; i < lis.length; i++) {
-        tmp = lis[i].innerText;
-        if (tmp.indexOf('m3u8') != -1 || tmp.indexOf('mp4') != -1) {
-          play = `<span class="playSpan" onclick = "zPlay.doPlay()">▶</span>`;
-        } else {
-          play = '';
+      // if (location.origin === "http://okzyzy.com") {
+        var lis = document.querySelectorAll("div.vodplayinfo li"); //文档中0~end 是链接项目，渲染结束后是6~end是链接项目
+        var tmp, play;
+        for (var i = 0; i < lis.length; i++) {
+          tmp = lis[i].innerText;
+          if (tmp.indexOf('m3u8') != -1 || tmp.indexOf('mp4') != -1) {
+            play = `<span class="playSpan" onclick = "zPlay.doPlay()">▶</span>`;
+          } else {
+            play = '';
+          }
+          lis[i].innerHTML = lis[i].childNodes[0].outerHTML + '<a target="_blank" href="' + tmp.slice(tmp.indexOf("http")) + '">' + tmp + '</a>' + play;
         }
-        lis[i].innerHTML = lis[i].childNodes[0].outerHTML + '<a target="_blank" href="' + tmp.slice(tmp.indexOf("http")) + '">' + tmp + '</a>' + play;
-      }
-      zPlay.init();
-    } catch (e) {}
+        zPlay.init();
+      // }else{
+      //   zPlay.init();
+      //   setTimeout(()=>zPlay.doPlay, 500);
+      //   // zPlay.doPlay();
+      // }
+    } catch (e) {
+      console.log(e);
+    }
   }
   //适配分类页，http://*.com/?m=vod-type-id-*.html 方便翻页
   if (location.search.indexOf("type") != -1) {

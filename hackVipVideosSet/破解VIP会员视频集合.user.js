@@ -4,6 +4,7 @@
 // @version    4.2.2
 // @description  一键破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。详细方法看说明和图片。包含了[VIP视频在线解析破解去广告(全网)xx.xx.xx更新可用▶sonimei134][破解全网VIP视频会员-去广告▶ttmsjx][VIP会员视频解析▶龙轩][酷绘-破解VIP会员视频▶ahuiabc2003]以及[VIP视频破解▶hoothin]的部分接口。[Tampermonkey | Violentmonkey | Greasymonkey 4.0+]
 // @author     黄盐
+// require  https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @noframes
 // @match    *://*.iqiyi.com/*
 // @match    *://*.youku.com/*
@@ -30,13 +31,15 @@
 // @grant    GM_setValue
 // @grant    unsafeWindow
 // @grant    GM_xmlhttpRequest
+// @grant    GM.xmlHttpRequest
 // @grant    GM_openInTab
+// @grant    GM.openInTab
 // ==/UserScript==
 
 (() => {
   'use strict';
   const YoukuIcon = '<svg width="1.2em" height="1.2em" viewbox="0 0 72 72"><defs><circle id="youkuC1" r="5.5" style="stroke:none;;fill:#0B9BFF;"></circle><path id="youkuArow" d="m0,10 a5,5 0,0,1 0,-10 h20 a5,5 0,0,1 0,10z" style="fill:#FF4242;"></path></defs><circle cx="36" cy="36" r="30.5" style="stroke:#30B4FF;stroke-width:11;fill:none;"></circle><use x="10.5" y="19" xlink:href="#youkuC1"/><use x="61.5" y="53" xlink:href="#youkuC1"/><use x="39" y="1" transform="rotate(30)" xlink:href="#youkuArow"/><use x="-1" y="52" transform="rotate(-35)" xlink:href="#youkuArow"/></svg>';
-  const vqqIcon = '<svg height="1.2em" width="1.2em" viewbox="0 0 185 170"><defs><path id="vQQ" d="M7 20Q14 -10 55 7Q100 23 145 60Q170 80 145 102Q108 138 47 165Q15 175 4 146Q-5 80 7 20"></path></defs><use style="fill:#44B9FD;" transform="translate(27,0)" xlink:href="#vQQ"></use><use style="fill:#FF9F01;" transform="translate(0,18),scale(0.8,0.75)" xlink:href="#vQQ"></use><use style="fill:#97E61B;" transform="translate(23,18),scale(0.80.75)" xlink:href="#vQQ"></use><use style="fill:#fff;" transform="translate(50,45),scale(0.4)" xlink:href="#vQQ"></use></svg>';
+  const VQQIcon = '<svg height="1.2em" width="1.2em" viewbox="0 0 185 170"><defs><path id="vQQ" d="M7 20Q14 -10 55 7Q100 23 145 60Q170 80 145 102Q108 138 47 165Q15 175 4 146Q-5 80 7 20"></path></defs><use style="fill:#44B9FD;" transform="translate(27,0)" xlink:href="#vQQ"></use><use style="fill:#FF9F01;" transform="translate(0,18),scale(0.8,0.75)" xlink:href="#vQQ"></use><use style="fill:#97E61B;" transform="translate(23,18),scale(0.80.75)" xlink:href="#vQQ"></use><use style="fill:#fff;" transform="translate(50,45),scale(0.4)" xlink:href="#vQQ"></use></svg>';
   var tMscript = document.createElement('script');
   tMscript.innerText = `q = function(cssSelector){return document.querySelector(cssSelector);};qa = function(cssSelector){return document.querySelectorAll(cssSelector);};`;
   document.head.appendChild(tMscript);
@@ -76,12 +79,15 @@
   function GMsetValue(name, defaultValue) {
     if (typeof GM_setValue === 'function') {
       GM_setValue(name, defaultValue);
-      return new Promise((resolve, reject) => {
-      resolve();
-      reject();
-      });
     } else {
-      return GM.setValue(name, defaultValue);
+      GM.setValue(name, defaultValue);
+    }
+  }
+  function GMxmlhttpRequest(obj){
+    if (GM_xmlhttpRequest === "function") {
+      GM_xmlhttpRequest(obj);
+    } else{
+      GM.xmlhttpRequest(obj);
     }
   }
   var replaceRaw,  /*是否嵌入当前页面*/
@@ -91,7 +97,7 @@
     /*TMHY:TamperMonkeyHuanYan*/
     #TMHYvideoContainer{z-index:999998;background:rgba(0,0,0,.7);position:fixed;top:7em;left:5em;height:65%;width:65%;resize:both;overflow:auto;box-shadow:2px 2px 5px 5px rgba(255,255,0,.8);}
     /*TMHYVideoContainer*/
-    #TMHYvideoContainer button{position:absolute;top:.1em;cursor:pointer;visibility:hidden;font-size:3em;color:#fff;background:transparent;border:0;}
+    #TMHYvideoContainer button{top:.1em;cursor:pointer;visibility:hidden;font-size:3em;color:#fff;background:transparent;border:0;}
     #TMHYvideoContainer:hover button{visibility:visible;}
     #TMHYvideoContainer:hover button:hover{color:#ff0;}
     #TMHYiframe{height:100%;width:100%;overflow:auto;position:absolute;top:0;left:0;margin:auto;border:0;box-shadow:0 0 3em rgba(0,0,0,.4);z-index:-1;}
@@ -135,8 +141,8 @@
   //apis name:显示的文字  url:接口  title:提示文字  intab:是否适合内嵌(嵌入判断:GMgetValue("replaceRaw",false)值||intab值)
   var apis =[
     {name:"百域阁",url:"http://api.baiyug.cn/vip/index.php?url=",title:"转圈圈就换线路",intab:1},
-    {name:"vParse"+vqqIcon,url:"https://api.vparse.org/?url=",title:"支持腾讯",intab:1},
-    {name:"猫云"+vqqIcon,url:"https://jx.maoyun.tv/index.php?id=",title:"支持腾讯",intab:1},
+    {name:"vParse"+VQQIcon,url:"https://api.vparse.org/?url=",title:"支持腾讯",intab:1},
+    {name:"猫云"+VQQIcon,url:"https://jx.maoyun.tv/index.php?id=",title:"支持腾讯",intab:1},
     //{name:"FLVSP[腾讯]",url:"https://api.flvsp.com/?url=",title:"支持腾讯",intab:1},//解析源同上
     {name:"搜你妹"+YoukuIcon,url:"http://www.sonimei.cn/?url=",title:"综合接口，VIP视频*** 更新可用【作者sonimei134】脚本的接口",intab:0},
     {name:"噗噗电影",url:"http://pupudy.com/play?make=url&id=",title:"综合接口，破解全网VIP视频会员-去广告【作者ttmsjx】脚本的接口",intab:0},
@@ -156,6 +162,18 @@
   ];
   //嵌入页面播放
   function openInTab(evt) {
+    // 找到支持的方法, 使用需要全屏的 element 调用
+    function launchFullScreen(element) {
+      if(element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if(element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+      } else if(element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+      } else if(element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+      }
+    }
     if(evt.target.dataset.intab === '1'){
       //如果页面有播放窗口,只需更新播放窗口的 src, 如果没有播放窗口,读取播放窗口位置信息,新建一个播放窗
       if(q('#TMHYiframe') === null){
@@ -165,13 +183,14 @@
           var a = makeEl('div');
           a.id = 'TMHYvideoContainer';
           a.setAttribute('style', sty);
-          a.innerHTML = '<button title="关闭播放窗口" onclick="document.body.removeChild(q(\'#TMHYvideoContainer\'))">🗙</button>';
+          a.innerHTML = '<button title="关闭" id="TMHYIframeClose">&#128473;</button><button id="TMHYfullScreen" title="全屏">&#128470;</button>';
           document.body.appendChild(a);
-
           var b=makeEl('iframe');
           b.id='TMHYiframe';
           b.src=evt.target.dataset.url + location.href;
           q('#TMHYvideoContainer').appendChild(b);
+          q('#TMHYIframeClose').addEventListener('click', ()=>{document.body.removeChild(q('#TMHYvideoContainer'));}, false);
+          q('#TMHYfullScreen').addEventListener('click', ()=>{launchFullScreen(q('#TMHYiframe'));}, false);
         });
       } else{
         q('#TMHYiframe').src=evt.target.dataset.url + location.href;
@@ -184,10 +203,10 @@
   //保存嵌入页面大小位置设置
   function saveInTabSetting(){
     var intabSize = {
-      height:q('#TMiframeHeight').value,
-      width:q('#TMiframeWidth').value,
-      left:q('#TMiframeLeft').value,
-      top:q('#TMiframeTop').value
+      height:q('#TMpH').value,
+      width:q('#TMpW').value,
+      left:q('#TMpL').value,
+      top:q('#TMpT').value
     };
     GMsetValue('intabSize', JSON.stringify(intabSize));
     setTimeout('document.body.removeChild(q("#TMHYSetting"));', 30);
@@ -200,7 +219,7 @@
       a.id='TMHYSetting';
       a.setAttribute('class', 'TMHYp');
       a.innerHTML = `
-      <button class="TMHYClose" onclick="document.body.removeChild(this.parentNode)">🗙</button>
+      <button class="TMHYClose" onclick="document.body.removeChild(this.parentNode)">&#128473;</button>
       <fieldset>
         <legend>页内播放窗口位置大小</legend>
         <label for="TMpH"><span class="TMHYspan80">高度</span><input type="text" id="TMpH" value="${intabSize.height}"  class="TMHYmti" placeholder='如"300px"或者"65%"'/></label>
@@ -243,7 +262,7 @@
         //License:MIT   Author:hoothin  Homepage: http://hoothin.com  Email: rixixi@gmail.com
           var target = e.target.parentNode.tagName == "LI" ? e.target.parentNode : (e.target.parentNode.parentNode.tagName == "LI" ? e.target.parentNode.parentNode : e.target.parentNode.parentNode.parentNode);
           if (target.tagName != "LI") return;
-          GM_xmlhttpRequest({
+          GMxmlhttpRequest({
             method: 'GET',
             url: "http://cache.video.qiyi.com/jp/vi/" + target.dataset.videolistTvid + "/" + target.dataset.videolistVid + "/?callback=crackIqiyi",
             onload: function(result) {
@@ -258,7 +277,7 @@
       } else {
         q('#widget-dramaseries').removeEventListener('click', getLink);
       }
-    } catch(e) { }
+    } catch(e) {}
   }
   /* 勾选自定义接口 */
   function addApiCheck() {
@@ -358,7 +377,6 @@
         <button id="tMsave">保存</button>
       </li>
     `;
-    // var ar = await JSON.parse(GM.getValue('userApis', "[{}]")),d;
     GMgetValue('userApis', "[{}]").then((ag)=>{
       var ar = JSON.parse(ag),d;
       try {
