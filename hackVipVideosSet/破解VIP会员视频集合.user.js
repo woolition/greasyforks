@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name     破解VIP会员视频集合
 // @namespace  https://greasyfork.org/zh-CN/users/104201
-// @version    4.2.3
+// @version    4.2.4
 // @description  一键破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。详细方法看说明和图片。包含了[VIP视频在线解析破解去广告(全网)xx.xx.xx更新可用▶sonimei134][破解全网VIP视频会员-去广告▶ttmsjx][VIP会员视频解析▶龙轩][酷绘-破解VIP会员视频▶ahuiabc2003]以及[VIP视频破解▶hoothin]的部分接口。[Tampermonkey | Violentmonkey | Greasymonkey 4.0+]
 // @author     黄盐
 // require  https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
