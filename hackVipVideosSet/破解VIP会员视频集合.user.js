@@ -140,11 +140,11 @@
   };
   //apis name:显示的文字  url:接口  title:提示文字  intab:是否适合内嵌(嵌入判断:GMgetValue("replaceRaw",false)值||intab值)
   var apis =[
+    {name:"够低调",url:"http://goudidiao.com/?url=",title:"转圈圈就换线路",intab:1},
     {name:"百域阁",url:"http://api.baiyug.cn/vip/index.php?url=",title:"转圈圈就换线路",intab:1},
+    {name:"搜你妹"+YoukuIcon,url:"http://www.sonimei.cn/?url=",title:"综合接口，VIP视频*** 更新可用【作者sonimei134】脚本的接口",intab:0},
     {name:"vParse"+VQQIcon,url:"https://api.vparse.org/?url=",title:"支持腾讯",intab:1},
     {name:"猫云"+VQQIcon,url:"https://jx.maoyun.tv/index.php?id=",title:"支持腾讯",intab:1},
-    //{name:"FLVSP[腾讯]",url:"https://api.flvsp.com/?url=",title:"支持腾讯",intab:1},//解析源同上
-    {name:"搜你妹"+YoukuIcon,url:"http://www.sonimei.cn/?url=",title:"综合接口，VIP视频*** 更新可用【作者sonimei134】脚本的接口",intab:0},
     {name:"噗噗电影",url:"http://pupudy.com/play?make=url&id=",title:"综合接口，破解全网VIP视频会员-去广告【作者ttmsjx】脚本的接口",intab:0},
     {name:"抢先影院"+YoukuIcon,url:"http://www.qxyingyuan.vip/play?make=url&id=",title:"据说优酷比较稳定",intab:0},
     {name:"酷绘",url:"http://appapi.svipv.kuuhui.com/svipjx/liulanqichajian/browserplugin/qhjx/qhjx.php?id=",title:"综合接口，酷绘*【作者ahuiabc2003】脚本的接口",intab:0},
@@ -154,10 +154,9 @@
     {name:"VIP看看",url:"http://q.z.vip.totv.72du.com/?url=",title:"更换线路成功率会提高",intab:1},
     {name:"ODFLV",url:"http://aikan-tv.com/?url=",title:"不稳定，广告过滤软件可能有影响",intab:1},
     {name:"163人",url:"http://jx.api.163ren.com/vod.php?url=",title:"偶尔支持腾讯",intab:1},
-    {name:"CKFLV",url:"http://www.0335haibo.com/tong.php?url=",title:"CKFLV云,部分站点不支持",intab:1},
+    //{name:"CKFLV",url:"http://www.0335haibo.com/tong.php?url=",title:"CKFLV云,部分站点不支持",intab:1},
     {name:"无名小站2",url:"http://www.wmxz.wang/video.php?url=",title:"转圈圈就换线路",intab:1},
-    {name:"眼睛会下雨",url:"http://www.vipjiexi.com/yun.php?url=",title:"www.vipjiexi.com",intab:1},
-    {name:"1008影视"+YoukuIcon,url:"http://api.1008net.com/v.php?url=",title:"据说可以看布袋游戏视频",intab:1},
+    //{name:"眼睛会下雨",url:"http://www.vipjiexi.com/yun.php?url=",title:"www.vipjiexi.com",intab:1},
     {name:"人人发布",url:"http://v.renrenfabu.com/jiexi.php?url=",title:"综合，多线路",intab:0}
   ];
   //嵌入页面播放
@@ -454,3 +453,5 @@
 //{name:"云解析",url:"http://www.efunfilm.com/yunparse/index.php?url=",title:"新接口，稳定性未知"},
 //{name:"妹儿云",url:"https://www.yymeier.com/api.php?url=",title:"不稳定"}
 //{name:"V云[腾讯]",url:"http://www.viyun.me/jiexi.php?url=",title:"腾讯首选"},
+//{name:"1008影视"+YoukuIcon,url:"http://api.1008net.com/v.php?url=",title:"据说可以看布袋游戏视频",intab:1},
+//{name:"FLVSP[腾讯]",url:"https://api.flvsp.com/?url=",title:"支持腾讯",intab:1},//解析源同上

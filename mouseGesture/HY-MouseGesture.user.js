@@ -196,9 +196,11 @@
       },
       toTop: function() {
         document.documentElement.scrollTo(0, 0);
+        document.body.scrollTo(0, 0);  //file:///**
       },
       toBottom: function() {
         document.documentElement.scrollTo(0, 9999999);
+        document.body.scrollTo(0, 9999999);  //file:///**
       },
       reopenTab: function() {
         //GreasyMonkdy:
