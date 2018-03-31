@@ -1,13 +1,16 @@
 // ==UserScript==
 // @name         资源网助手
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      1.1
-// @description  OK资源网，最大资源网[MP4][m3u8]视频直接播放，分类页面改进翻页功能
+// @version      1.2
+// @description  最大资源网,OK资源网，酷云资源[MP4][m3u8]视频直接播放，分类页面改进翻页功能
 // @author       黄盐
 // @match        http://www.zuidazy.com/?m=vod-*
 // @match        http://www.okokzy.com/?m=vod-*
 // @match        http://okzyzy.com/?m=vod-*
+// @match        http://okzyzy.cc/?m=vod-*
 // @match        http://bobo.okokbo.com*
+// @match        http://www.kuyunzy.cc/detail/*
+// @match        http://www.kuyun.co/detail/*
 // @resource     playercss   https://cdn.bootcss.com/dplayer/1.17.3/DPlayer.min.css
 // @resource     hlsjs       https://cdn.bootcss.com/hls.js/0.8.9/hls.min.js
 // @resource     playerjs    https://cdn.bootcss.com/dplayer/1.17.3/DPlayer.min.js
@@ -31,7 +34,7 @@
   //   // return;
   // }
   //适配详情页，http://*.com/?m=vod-detail-id-*.html
-  if (location.search.indexOf("detail") != -1 || (location.origin === "http://bobo.okokbo.com" && GM_getValue("lastLink", ""))) {
+  if (location.href.indexOf("detail") != -1 || (location.origin === "http://bobo.okokbo.com" && GM_getValue("lastLink", ""))) {
     try {
       //-------> Prepare
       //ERRC:enable right click to close
@@ -41,6 +44,7 @@
         #videoDiv{position:fixed;top:100px;left:100px;width:60%;height:auto;}
         .videoFullscreen{position:absolute;top:0;left:0;width:auto;height:auto;}
         `);
+      //准备好播放器,以便播放.
       // new Function(GM_getResourceText("hlsjs"))();
       // new Function(GM_getResourceText("playerjs"))();
       eval(GM_getResourceText("hlsjs"));
@@ -69,7 +73,7 @@
           }
           // let urlStr = event.target.previousElementSibling.href || GM_getValue("lastLink","");
           let videoType = (urlStr.split(".").pop() === "m3u8") ? "hls" : "normal";
-          let siteColor = location.origin !== "http://bobo.okokbo.com" ? window.getComputedStyle(document.querySelector("div.sddm")).backgroundColor : "#ff0";
+          let siteColor = "#ff6a1f";
           let dp = new DPlayer({
             theme: siteColor,
             container: containDiv,
@@ -115,27 +119,21 @@
       })();
       //=========== Run =================
       GM_addStyle(`
-    span.playSpan{padding:2px 5px;color:${window.getComputedStyle(document.querySelector("div.sddm")).backgroundColor};}
+    span.playSpan{padding:2px 5px;color:#ff6a1f;}
     span.playSpan:hover{background:#00000010;padding:3px 10px;cursor:pointer;}
     `);
-      // if (location.origin === "http://okzyzy.com") {
-        var lis = document.querySelectorAll("div.vodplayinfo li"); //文档中0~end 是链接项目，渲染结束后是6~end是链接项目
+        var lis = document.querySelectorAll("input[name*='copy_']");
         var tmp, play;
         for (var i = 0; i < lis.length; i++) {
-          tmp = lis[i].innerText;
+          tmp = lis[i].value;
           if (tmp.indexOf('m3u8') != -1 || tmp.indexOf('mp4') != -1) {
             play = `<span class="playSpan" onclick = "zPlay.doPlay()">▶</span>`;
           } else {
             play = '';
           }
-          lis[i].innerHTML = lis[i].childNodes[0].outerHTML + '<a target="_blank" href="' + tmp.slice(tmp.indexOf("http")) + '">' + tmp + '</a>' + play;
+          lis[i].parentNode.innerHTML = lis[i].outerHTML + '<a target="_blank" href="' + lis[i].value + '">' + lis[i].parentNode.textContent + '</a>' + play;
         }
         zPlay.init();
-      // }else{
-      //   zPlay.init();
-      //   setTimeout(()=>zPlay.doPlay, 500);
-      //   // zPlay.doPlay();
-      // }
     } catch (e) {
       console.log(e);
     }
