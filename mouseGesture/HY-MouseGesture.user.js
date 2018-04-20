@@ -4,7 +4,7 @@
 // @namespace      https://greasyfork.org/users/104201
 // @description    HY's mouse gesture script,supports ringt-key draw track functions and left-key drag functions.Drag target can be [Text] & [Links] & [Image]  Customizenable → Right click to draw ⇄(right,left) to setting
 // @description:zh-CN  鼠标手势脚本,就是这么拽:支持右键轨迹手势和左键拖拽功能.可以拖拽[文本],[链接]和[图片],支持自定义设置:鼠标画➡⬅(右左)路径,进入设置
-// @version      2.3
+// @version      2.4
 // @include      *
 // @noframes
 // @run-at       document-end
@@ -1373,7 +1373,7 @@
           <li name="mg1">   <span>◧</span>  <b>Config</b>  </li>
           <li name="mg2">   <span>↯</span>   <b>Gesture</b> </li>
           <li name="mg3">   <span>❓</span>  <b>About</b>   </li>
-          <li name="close"> <span>🗙</span>  <b>Close</b>   </li>
+          <li name="closePanel"> <span>🗙</span>  <b>Close</b>   </li>
         </div>
         <div id="mg1" class="MPcontent">mg1</div>
         <div id="mg2" class="MPcontent">mg2</div>
@@ -1602,7 +1602,7 @@
           });
           attr(q('[name='+named+']')[0], 'class', 'MPselected');
           break;
-        case 'close':
+        case 'closePanel':
           q('body')[0].removeChild(q('#MPsetting')[0]);
           break;
         case 'addFunction':
