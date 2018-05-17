@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         资源网助手
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      1.2
-// @description  最大资源网,OK资源网，酷云资源[MP4][m3u8]视频直接播放，分类页面改进翻页功能
+// @version      1.3
+// @description  最大资源网,OK资源网，酷云资源，精品资源[MP4][m3u8]视频直接播放，分类页面改进翻页功能
 // @author       黄盐
 // @match        http://www.zuidazy.com/?m=vod-*
 // @match        http://www.okokzy.com/?m=vod-*
@@ -11,6 +11,7 @@
 // @match        http://bobo.okokbo.com*
 // @match        http://www.kuyunzy.cc/detail/*
 // @match        http://www.kuyun.co/detail/*
+// @match        http://jingpinzy.com/?m=vod-detail-id*
 // @resource     playercss   https://cdn.bootcss.com/dplayer/1.17.3/DPlayer.min.css
 // @resource     hlsjs       https://cdn.bootcss.com/hls.js/0.8.9/hls.min.js
 // @resource     playerjs    https://cdn.bootcss.com/dplayer/1.17.3/DPlayer.min.js

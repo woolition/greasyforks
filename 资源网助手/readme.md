@@ -1,5 +1,5 @@
 # 资源网助手.user.js
-> 版本 V1.2
+> 版本 V1.3
 
 > 作者: 黄盐
 
@@ -10,6 +10,8 @@
 > [OK资源采集](http://okzyzy.cc/?m=vod-*)
 
 > [酷云资源](http://www.kuyun.co/)
+
+> [精品资源](http://jingpinzy.com/)
 
 ### 如何关闭播放器
 > **右键菜单** -> **🗙关闭播放器**
@@ -40,6 +42,10 @@
 [![devDependency Status](https://img.shields.io/david/dev/MoePlayer/dplayer.svg?style=flat-square)](https://david-dm.org/MoePlayer/DPlayer#info=devDependencies)
 
 ### 历史
+
+V1.3  2018-5-17
+
+新增支持 精品资源 网.
 
 V1.2  2018-3-31
 
