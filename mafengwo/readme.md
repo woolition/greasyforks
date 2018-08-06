@@ -1,6 +1,6 @@
 # 马蜂窝系列脚本
 
-## mfwTripMall
+## mfwTripMall(马蜂窝旅游商城--获取销量价格)
 
 ##### 适用于旅行商城，把列表页面的数据项目整理为表格，用于辅助收集数据，便于分析
 
@@ -11,12 +11,17 @@
 
 ### 使用方法
 
-1. 启用前
+-  启用前
 
 ![启用前(Before) image](https://github.com/woolition/greasyforks/raw/master/img/mfwTripMall0.png)
-
-2. 启用表格模式
+<hr>
+- 点击菜单，开启表格模式
 
 ![点击菜单，开启表格模式 image](https://github.com/woolition/greasyforks/raw/master/img/mfwTripMall1.png)
+<hr>
+
+- 翻页列表上移，方便快速翻页
 ![翻页列表上移 image](https://github.com/woolition/greasyforks/raw/master/img/mfwTripMall2.png)
+<hr>
+- 点击【转成表格】可生成表格
 ![点击【转成表格】可生成表格 image](https://github.com/woolition/greasyforks/raw/master/img/mfwTripMall3.png)
