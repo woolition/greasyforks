@@ -15,6 +15,7 @@
 
 ![启用前(Before) image](https://github.com/woolition/greasyforks/raw/master/img/mfwTripMall0.png)
 <hr>
+
 - 点击菜单，开启表格模式
 
 ![点击菜单，开启表格模式 image](https://github.com/woolition/greasyforks/raw/master/img/mfwTripMall1.png)
@@ -23,5 +24,7 @@
 - 翻页列表上移，方便快速翻页
 ![翻页列表上移 image](https://github.com/woolition/greasyforks/raw/master/img/mfwTripMall2.png)
 <hr>
+
 - 点击【转成表格】可生成表格
+
 ![点击【转成表格】可生成表格 image](https://github.com/woolition/greasyforks/raw/master/img/mfwTripMall3.png)
