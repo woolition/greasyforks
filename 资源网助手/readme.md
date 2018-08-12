@@ -1,13 +1,13 @@
 # 资源网助手.user.js
-> 版本 V1.3
+> 版本 V1.4
 
 > 作者: 黄盐
 
 ### 适用于
 
-> [最大资源网](http://www.zuidazy.com/?m=vod-*)
+> [最大资源网](http://www.zuidazy.net/?m=vod-*)
 
-> [OK资源采集](http://okzyzy.cc/?m=vod-*)
+> [OK资源采集](http://www.okzyzy.com/?m=vod-*)
 
 > [酷云资源](http://www.kuyun.co/)
 
@@ -42,6 +42,10 @@
 [![devDependency Status](https://img.shields.io/david/dev/MoePlayer/dplayer.svg?style=flat-square)](https://david-dm.org/MoePlayer/DPlayer#info=devDependencies)
 
 ### 历史
+
+V1.4  2018-8-12
+
+精品资源网，最大资源网，OK资源网 网址更新，跟进匹配.
 
 V1.3  2018-5-17
 
