@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name     破解VIP会员视频集合
 // @namespace  https://greasyfork.org/zh-CN/users/104201
-// @version    4.2.4
-// @description  一键破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。详细方法看说明和图片。包含了[VIP视频在线解析破解去广告(全网)xx.xx.xx更新可用▶sonimei134][破解全网VIP视频会员-去广告▶ttmsjx][VIP会员视频解析▶龙轩][酷绘-破解VIP会员视频▶ahuiabc2003]以及[VIP视频破解▶hoothin]的部分接口。[Tampermonkey | Violentmonkey | Greasymonkey 4.0+]
+// @version    4.2.5
+// @description  一键破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。详细方法看说明和图片。包含了[一键VIP视频解析、去广告（全网） xxxx-xx-xx 可用▶mark zhang][VIP视频在线解析破解去广告(全网)xx.xx.xx更新可用▶sonimei134][破解全网VIP视频会员-去广告▶ttmsjx][VIP会员视频解析▶龙轩][酷绘-破解VIP会员视频▶ahuiabc2003]以及[VIP视频破解▶hoothin]的部分接口。[Tampermonkey | Violentmonkey | Greasymonkey 4.0+]
 // @author     黄盐
 // require  https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @noframes
@@ -143,6 +143,7 @@
     {name:"够低调",url:"http://goudidiao.com/?url=",title:"转圈圈就换线路",intab:1},
     {name:"百域阁",url:"http://api.baiyug.cn/vip/index.php?url=",title:"转圈圈就换线路",intab:1},
     {name:"搜你妹"+YoukuIcon,url:"http://www.sonimei.cn/?url=",title:"综合接口，VIP视频*** 更新可用【作者sonimei134】脚本的接口",intab:0},
+    {name:"玩的嗨"+YoukuIcon,url:"http://tv.wandhi.com/go.html?url=",title:"综合接口，一键VIP*** 更新可用【作者mark zhang】脚本的接口",intab:0},
     {name:"vParse"+VQQIcon,url:"https://api.vparse.org/?url=",title:"支持腾讯",intab:1},
     {name:"猫云"+VQQIcon,url:"https://jx.maoyun.tv/index.php?id=",title:"支持腾讯",intab:1},
     {name:"噗噗电影",url:"http://pupudy.com/play?make=url&id=",title:"综合接口，破解全网VIP视频会员-去广告【作者ttmsjx】脚本的接口",intab:0},
