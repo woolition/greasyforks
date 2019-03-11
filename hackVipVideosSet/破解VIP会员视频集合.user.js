@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name     破解VIP会员视频集合
 // @namespace  https://greasyfork.org/zh-CN/users/104201
-// @version    4.2.5
-// @description  一键破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。详细方法看说明和图片。包含了[一键VIP视频解析、去广告（全网） xxxx-xx-xx 可用▶mark zhang][VIP视频在线解析破解去广告(全网)xx.xx.xx更新可用▶sonimei134][破解全网VIP视频会员-去广告▶ttmsjx][VIP会员视频解析▶龙轩][酷绘-破解VIP会员视频▶ahuiabc2003]以及[VIP视频破解▶hoothin]的部分接口。[Tampermonkey | Violentmonkey | Greasymonkey 4.0+]
+// @version    4.2.6
+// @description  2019-3-11更新。一键破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。详细方法看说明和图片。包含了[一键VIP视频解析、去广告（全网） xxxx-xx-xx 可用▶mark zhang][VIP视频在线解析破解去广告(全网)xx.xx.xx更新可用▶sonimei134][破解全网VIP视频会员-去广告▶ttmsjx][VIP会员视频解析▶龙轩][酷绘-破解VIP会员视频▶ahuiabc2003]以及[VIP视频破解▶hoothin]的部分接口。[Tampermonkey | Violentmonkey | Greasymonkey 4.0+]
 // @author     黄盐
 // require  https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @noframes
@@ -135,26 +135,26 @@
     #inTabSettingSave {position:relative;margin-top:10px;padding:3px 20px;}
   `);
   var defaultapi = {
-    title: "龙轩脚本的接口，默认用浮空解析，失效请更换接口",
-    url: "http://goudidiao.com/?url="
+    title: "618G,失效请更换接口",
+    url: "http://jx.618g.com/?url="
   };
   //apis name:显示的文字  url:接口  title:提示文字  intab:是否适合内嵌(嵌入判断:GMgetValue("replaceRaw",false)值||intab值)
   var apis =[
-    {name:"够低调",url:"http://goudidiao.com/?url=",title:"转圈圈就换线路",intab:1},
-    {name:"百域阁",url:"http://api.baiyug.cn/vip/index.php?url=",title:"转圈圈就换线路",intab:1},
-    {name:"搜你妹"+YoukuIcon,url:"http://www.sonimei.cn/?url=",title:"综合接口，VIP视频*** 更新可用【作者sonimei134】脚本的接口",intab:0},
+    {name:"618G",url:"http://jx.618g.com/?url=",title:"618G",intab:1},
+    // {name:"百域阁",url:"http://api.baiyug.cn/vip/index.php?url=",title:"转圈圈就换线路",intab:1},
     {name:"玩的嗨"+YoukuIcon,url:"http://tv.wandhi.com/go.html?url=",title:"综合接口，一键VIP*** 更新可用【作者mark zhang】脚本的接口",intab:0},
-    {name:"vParse"+VQQIcon,url:"https://api.vparse.org/?url=",title:"支持腾讯",intab:1},
-    {name:"猫云"+VQQIcon,url:"https://jx.maoyun.tv/index.php?id=",title:"支持腾讯",intab:1},
-    {name:"噗噗电影",url:"http://pupudy.com/play?make=url&id=",title:"综合接口，破解全网VIP视频会员-去广告【作者ttmsjx】脚本的接口",intab:0},
-    {name:"抢先影院"+YoukuIcon,url:"http://www.qxyingyuan.vip/play?make=url&id=",title:"据说优酷比较稳定",intab:0},
-    {name:"酷绘",url:"http://appapi.svipv.kuuhui.com/svipjx/liulanqichajian/browserplugin/qhjx/qhjx.php?id=",title:"综合接口，酷绘*【作者ahuiabc2003】脚本的接口",intab:0},
-    {name:"旋风解析",url:"http://api.xfsub.com/index.php?url=",title:"1905优先使用",intab:1},
+    {name:"最惠买",url:"http://www.zhmdy.top/index.php?zhm_jx=",title:"懒人专用***脚本接口",intab:0},
+    {name:"噗噗电影",url:"http://www.pupudy.com/splay.php?play=",title:"综合接口，破解全网VIP视频会员-去广告【作者ttmsjx】脚本的接口",intab:0},
+    {name:"搜你妹"+YoukuIcon,url:"http://www.sonimei.cn/?url=",title:"综合接口，VIP视频*** 更新可用【作者sonimei134】脚本的接口",intab:0},
+    {name:"ODFLV",url:"http://aikan-tv.com/?url=",title:"不稳定，广告过滤软件可能有影响",intab:1},
+
+    {name:"石头解析",url:"https://jiexi.071811.cc/jx.php?url=",title:"手动点播放",intab:1},
+    {name:"乐乐云",url:"https://660e.com/?url=",title:"乐乐云，未知效果",intab:1},
+    // {name:"旋风解析",url:"http://api.xfsub.com/index.php?url=",title:"1905优先使用",intab:1},
     {name:"石头解析",url:"https://jiexi.071811.cc/jx.php?url=",title:"手动点播放",intab:1},
     {name:"无名小站",url:"http://www.sfsft.com/admin.php?url=",title:"无名小站同源",intab:1},
     {name:"VIP看看",url:"http://q.z.vip.totv.72du.com/?url=",title:"更换线路成功率会提高",intab:1},
-    {name:"ODFLV",url:"http://aikan-tv.com/?url=",title:"不稳定，广告过滤软件可能有影响",intab:1},
-    {name:"163人",url:"http://jx.api.163ren.com/vod.php?url=",title:"偶尔支持腾讯",intab:1},
+    // {name:"163人",url:"http://jx.api.163ren.com/vod.php?url=",title:"偶尔支持腾讯",intab:1},
     //{name:"CKFLV",url:"http://www.0335haibo.com/tong.php?url=",title:"CKFLV云,部分站点不支持",intab:1},
     {name:"无名小站2",url:"http://www.wmxz.wang/video.php?url=",title:"转圈圈就换线路",intab:1},
     //{name:"眼睛会下雨",url:"http://www.vipjiexi.com/yun.php?url=",title:"www.vipjiexi.com",intab:1},
@@ -456,3 +456,10 @@
 //{name:"V云[腾讯]",url:"http://www.viyun.me/jiexi.php?url=",title:"腾讯首选"},
 //{name:"1008影视"+YoukuIcon,url:"http://api.1008net.com/v.php?url=",title:"据说可以看布袋游戏视频",intab:1},
 //{name:"FLVSP[腾讯]",url:"https://api.flvsp.com/?url=",title:"支持腾讯",intab:1},//解析源同上
+
+// {name:"vParse"+VQQIcon,url:"https://api.vparse.org/?url=",title:"支持腾讯",intab:1},
+// {name:"猫云"+VQQIcon,url:"https://jx.maoyun.tv/index.php?id=",title:"支持腾讯",intab:1},
+
+    // {name:"抢先影院"+YoukuIcon,url:"http://www.qxyingyuan.vip/play?make=url&id=",title:"据说优酷比较稳定",intab:0},
+
+    // {name:"酷绘",url:"http://appapi.svipv.kuuhui.com/svipjx/liulanqichajian/browserplugin/qhjx/qhjx.php?id=",title:"综合接口，酷绘*【作者ahuiabc2003】脚本的接口",intab:0},
