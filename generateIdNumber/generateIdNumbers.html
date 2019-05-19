@@ -1,0 +1,175 @@
+<html>
+<head>
+  <style>
+    *{border-radius: 3px; font-family: "微软雅黑",SANS-SERIF;}
+    select {
+      width: 150px;
+      border: 1px solid #9999;
+      font-size: 1.1em;
+      padding: 1px;
+      margin: 2px;
+    }
+    textarea[name='ids']{width: auto;height: auto;padding: 5px; margin: 1em;}
+    span[name='generate'],span[name='areacode']{border: 1px solid #888;white-space: nowrap; padding: 5px;margin: 5px;}
+    span[name='areacode']::before{content:"区域编码:"}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+  <script src="areaCode.js"></script>
+</head>
+<body>
+  <div id="iddiv">
+    <select-addr v-model="sheng" :list="shengList()" @change="changeSheng"></select-addr>
+    <select-addr v-model="shi" :list="shiList()" @change="changeShi"></select-addr>
+    <select-addr v-model="xian" :list="xianList()"></select-addr>
+    <br>
+    <select-date v-model="year" :list="yearList"></select-date>
+    <select-date v-model="month" :list="monthList"></select-date>
+    <select-date v-model="day" :list="dayList"></select-date>
+    <hr>
+    <span name="areacode">{{xian}}</span>
+    <span name="generate">
+      <input type="button" value="生成" @click="generate">
+      <input type="number" v-model="idCount" max=999 min=1>个
+    </span><br>
+    <textarea :value="id" name="ids" rows="5" cols="25"></textarea>
+  </div>
+</body>
+<script>
+  var vm = new Vue({
+    el: "#iddiv",
+    data:{
+      areaCode: areaCode,
+      sheng: '110000',
+      shi: '110100',
+      xian: '110101',
+      year: new Date().getFullYear() -10,
+      month: 6,
+      day: 14,
+      idCount: 5,
+      id: ''
+    },
+    components: {
+      "select-addr": {
+        model:{ prop: 'value', event: 'change' },
+        props: ['value', 'list'],
+        data: function () {
+          return { areaCode: areaCode }
+        },
+        template: `<select :value="value" @change="changeValue">
+          <option v-for="v in list" :value="v[0]">{{v[1]}}</option>
+          </select>`,
+        methods: {
+          changeValue: function(e){
+            this.$emit('change', e.target.value);
+          }
+        }
+      },
+      "select-date": {
+        model: { prop: 'value', event: 'change' },
+        props: ['value', 'list'],
+        template: `<select :value="value" @change="changeValue">
+          <option v-for="v in list.list" :value="v">{{v}}{{list.unit}}</option>
+          </select>`,
+        methods:{
+          changeValue: function(e){
+            this.$emit("change", e.target.value);
+          }
+        }
+      }
+    },
+    computed: {
+      yearList: function(){
+        return {
+          list: this.rangArray(1900, new Date().getFullYear()),
+          unit: "年"
+        };
+      },
+      monthList: function(){
+        return {
+          list: this.rangArray(1,12),
+          unit: "月"
+        }
+      },
+      dayList: function(){
+        return {
+          list: this.rangArray(1,31),
+          unit: "日"
+        }
+      }
+    },
+    methods:{
+      rangArray: function(begin,end,step=1){
+        let a = [];
+        for(let i=begin;i<=end;i+= step){
+          a.push(i);
+        }
+        return a;
+      },
+      shengList: function(){
+        return Object.keys(areaCode).map((v,i)=>{
+          return [v,areaCode[v].name];
+        });
+      },
+      shiList: function(){
+        return Object.keys(areaCode[this.sheng].shi).map((v,i)=>{
+          return [v,areaCode[this.sheng].shi[v].name];
+        });
+      },
+      xianList: function(){
+        return Object.keys(areaCode[this.sheng].shi[this.shi].xian).map((v,i)=>{
+          return [v,areaCode[this.sheng].shi[this.shi].xian[v]];
+        });
+      },
+      changeSheng: function(){
+        this.shi = Object.keys(this.areaCode[this.sheng].shi)[0];
+        this.xian = Object.keys(this.areaCode[this.sheng].shi[this.shi].xian)[0];
+      },
+      changeShi: function(){
+        this.xian = Object.keys(this.areaCode[this.sheng].shi[this.shi].xian)[0];
+      },
+      generate: function(){
+        let No14 = `${this.xian}${this.year}${this.month>9?this.month:'0'+this.month}${this.day>9?this.day:'0'+this.day}`;
+        this.id = '';
+        for(let i=0;i<this.idCount; i++){
+          this.id += getIDNumber(No14) + '\n';
+        }
+        
+      }
+    }
+  });
+
+
+
+    function calculate(No17) {
+      // 前17位每项的系数
+      let coefficient = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+      // 除11取余的结果对应的校验位（最后一位）的值
+      let checkDigitMap = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'];
+      let sum =0;
+      for (var i = 0; i < 17; i++) {
+        sum += parseInt(No17[i] * coefficient[i]);
+      }
+      return checkDigitMap[sum % 11];
+    }
+    function random999(){
+      let a = Math.ceil(Math.random()*1000);
+      if(a>99){
+        return a;
+      }else{
+        if(a>9){
+          return '0'+a;
+        }else{
+          return '00'+a;
+        }
+      }
+    }
+    // 生成身份证号码 No14,包含地区码和出生日期，sex=0,不指定，sex=1,男，sex=2,女
+    function getIDNumber(No14){
+      // console.log(No14);
+      let digit3 = random999();
+      let checkDigit = calculate(No14+digit3);
+      return No14+digit3+checkDigit;
+    }
+
+</script>
+</html>
