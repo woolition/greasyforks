@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         资源网助手
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      1.5
+// @version      1.6
 // @description  最大资源网、172资源网、1977资源网、ok资源网、高清电影资源站、永久资源网、酷云资源、酷播资源网、非凡资源网[MP4][m3u8]视频直接播放，分类页面改进翻页功能。
 // @author       黄盐
 // 影视作品介绍页面
@@ -40,8 +40,8 @@
       eval(GM_getResourceText("playerjs"));
       // 运行 DPlayer
       this.zPlay = (function () {
-        let modul = {};
-        modul.init = function () {
+        let O = {};
+        O.init = function () {
           // 初始化，创建并绑定 video 容器
           var videoBox = document.createElement('div');
           document.body.appendChild(videoBox);
@@ -52,7 +52,7 @@
             oallowfullscreen="oallowfullscreen"
             webkitallowfullscreen="webkitallowfullscreen"></div>`
         };
-        modul.doPlay = function (actionMark) {
+        O.doPlay = function (actionMark) {
           let videoBox = document.querySelector('#videoBox');
           let url = "";
           try {
@@ -78,10 +78,10 @@
             },
             contextmenu: [{
               text: "🗙 关闭播放器",
-              link: "javascript:window.zPlay.close();"
+              click: (dp)=>{dp.destroy();}
             }, {
               text: "启用右键关闭播放器",
-              link: "javascript:window.zPlay.toggleERCC();"
+              click: ()=>{O.toggleERCC();}
             }
             // 这个菜单不上线，因为退出网页全屏的时候，并不会出发 fullscreen_cancel 事件。没法恢复原来大小
             // , {
@@ -109,17 +109,17 @@
           }
           setTimeout(() => dp.play(), 100);
         };
-        modul.toggleERCC = function () {
+        O.toggleERCC = function () {
           GM_setValue("ERCC", !GM_getValue("ERCC", false));
           try {
             document.querySelector("div.dplayer-menu").setAttribute("class", "dplayer-menu");
           } catch (e) { }
         };
-        modul.close = function () {
+        O.close = function () {
           document.body.removeChild(document.querySelector("#videoBox"));
-          modul.init();
+          O.init();
         };
-        return modul;
+        return O;
       })();
       //=========== Run =================
       GM_addStyle(`
