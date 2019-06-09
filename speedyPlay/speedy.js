@@ -84,7 +84,7 @@
     O.speedDivOuterHTML = `
       <div id="speedDiv" onselectstart="return false" class="noselect" unselectable="on">
         <input id="speedInput" type="text" maxlenth="4" v-model.number="speed" @change="changeSpeed" disabled="editable"
-        draggable="true" @dragstart="moveStart" @drag="move" />
+        draggable="true" @dragstart="moveStart" @touchstart="moveStart" @drag="move" @touchmove="move" />
         <span name="slowDown" @click.prevent="slowDown">${O.speedIcon}-</span>
         <input type="range" v-model.number="speed" min=0 max=10 :step=0.1 @input="changeRange" 
         :style="backgroundSize()"/>
@@ -164,11 +164,15 @@
             return `background-size:${this.speed*10}% 100%`;
           },
           moveStart: function(e){
+            console.log(e);
+            // 这里要增加对移动端的支持。主要解决 touchList touch的clientx,clientY的问题
             let dad = e.target.parentElement;
             this.dx = e.clientX - dad.offsetLeft;
             this.dy = e.clientY - dad.offsetTop;
           },
           move: function(e){
+            console.log(e);
+            // 这里要增加对移动端的支持。主要解决 touchList touch的clientx,clientY的问题
             let dad = e.target.parentElement;
             if(e.clientX && e.clientY){
               dad.style.left = e.clientX - this.dx + "px";
