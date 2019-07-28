@@ -1,44 +1,82 @@
 // ==UserScript==
 // @name         倍速播放
 // @namespace    https://greasyfork.org/zh-CN/users/104201-%E9%BB%84%E7%9B%90
-// @version      0.1
-// @description  HTML5播放器，倍速功能。可以实现最高10倍数播放。
+// @version      0.2
+// @description  HTML5播放器，倍速功能。可以实现最高10倍数播放。不同网站可以设置不同速率和位置
 // @author       黄盐
 // @include      *:*
 // @noframes
 // @run-at       document-end
+// @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @require      https://cdn.bootcss.com/vue/2.6.6/vue.js
 // @grant        GM_registerMenuCommand
-// require      file:///D:/nut/codes/extra/speedy.js
+// @require      https://cdn.bootcss.com/vue/2.6.6/vue.js
+// @require      https://cdn.bootcss.com/zepto/1.2.0/zepto.min.js
+// require       file:///D:\soft\github\greasyforks\speedyPlay/speedy.jqMobile.js
 // ==/UserScript==
 /* jshint esversion: 6 */
 
+/*!Tdrag 0.0.1 这里经过我修改，要恢复为jQuery插件，可以全部替换[Zepto]为[jQuery]即可*/;(function($,window,document,undefined){Zepto(function(){$.fn.Tdrag=function(opt){var call={scope:null,grid:null,axis:"all",pos:false,handle:null,moveClass:"tezml",dragChange:false,changeMode:"point",cbStart:function(){},cbMove:function(){},cbEnd:function(){},random:false,randomInput:null,animation_options:{duration:800,easing:"ease-out"},disable:false,disableInput:null};var dragfn=new Dragfn(this,opt);if(opt&&$.isEmptyObject(opt)==false){dragfn.options=$.extend(call,opt);}else{dragfn.options=call;}
+dragfn.firstRandom=true;var ele=dragfn.$element;dragfn.pack(ele,false);if(dragfn.options.randomInput!=null){$(dragfn.options.randomInput).bind("click",function(){dragfn.pack(ele,true);})}
+dragfn.loadJqueryfn()};var Dragfn=function(ele,opt){this.$element=ele;this.options=opt;};Dragfn.prototype={init:function(obj){var self=this;self.ele=self.$element;self.handle=$(obj);self.options=self.options;self.disable=self.options.disable;self._start=false;self._move=false;self._end=false;self.disX=0;self.disY=0;self.zIndex=1000;self.moving=false;self.moves="";self.box=$.type(self.options.scope)==="string"?self.options.scope:null;if(self.options.handle!=null){self.handle=$(obj).find(self.options.handle);}
+self.handle.on("mousedown",function(ev){self.start(ev,obj);obj.setCapture&&obj.setCapture();return false;});if(self.options.dragChange){$(obj).on("mousemove",function(ev){self.move(ev,obj);});$(obj).on("mouseup",function(ev){self.end(ev,obj);});}else{$(document).on("mousemove",function(ev){self.move(ev,obj);});$(document).on("mouseup",function(ev){self.end(ev,obj);});}},loadJqueryfn:function(){var self=this;$.extend({sortBox:function(obj){var arr=[];for(var s=0;s<$(obj).length;s++){arr.push($(obj).eq(s));}
+for(var i=0;i<arr.length;i++){for(var j=i+1;j<arr.length;j++){if(Number(arr[i].attr("index"))>Number(arr[j].attr("index"))){var temp=arr[i];arr[i]=arr[j];arr[j]=temp;}}}
+return arr},randomfn:function(obj){self.pack($(obj),true);},disable_open:function(){self.disable=false;},disable_cloose:function(){self.disable=true;}});},toDisable:function(){var self=this;if(self.options.disableInput!=null){$(self.options.disableInput).bind("click",function(){if(self.disable==true){self.disable=false}else{self.disable=true}})}},start:function(ev,obj){var self=this;self.moved=obj;if(self.disable==true){return false}
+self._start=true;var oEvent=ev||event;self.disX=oEvent.clientX-obj.offsetLeft;self.disY=oEvent.clientY-obj.offsetTop;$(obj).css("zIndex",self.zIndex++);self.options.cbStart();},move:function(ev,obj){var self=this;if(self._start!=true){return false}
+if(obj!=self.moved){return false}
+self._move=true;var oEvent=ev||event;var l=oEvent.clientX-self.disX;var t=oEvent.clientY-self.disY;if(self.box!=null){var rule=self.collTestBox(obj,self.box);if(l>rule.lmax){l=rule.lmax;}else if(l<rule.lmin){l=rule.lmin;}
+if(t>rule.tmax){t=rule.tmax;}else if(t<rule.tmin){t=rule.tmin;}}
+if(self.options.axis=="all"){obj.style.left=self.grid(obj,l,t).left+'px';obj.style.top=self.grid(obj,l,t).top+'px';}else if(self.options.axis=="y"){obj.style.top=self.grid(obj,l,t).top+'px';}else if(self.options.axis=="x"){obj.style.left=self.grid(obj,l,t).left+'px';}
+if(self.options.pos==true){self.moveAddClass(obj);}
+self.options.cbMove(obj,self);},end:function(ev,obj){var self=this;if(self._start!=true){return false}
+if(self.options.changeMode=="sort"&&self.options.pos==true){self.sortDrag(obj);}else if(self.options.changeMode=="point"&&self.options.pos==true){self.pointDrag(obj);}
+if(self.options.pos==true){self.animation(obj,self.aPos[$(obj).attr("index")]);}
+self.options.cbEnd();if(self.options.handle!=null){$(obj).find(self.options.handle).unbind("onmousemove");$(obj).find(self.options.handle).unbind("onmouseup");}else{$(obj).unbind("onmousemove");$(obj).unbind("onmouseup");}
+obj.releaseCapture&&obj.releaseCapture();self._start=false;},collTestBox:function(obj,obj2){var self=this;var l1=0;var t1=0;var l2=$(obj2).innerWidth()-$(obj).outerWidth();var t2=$(obj2).innerHeight()-$(obj).outerHeight();return{lmin:l1,tmin:t1,lmax:l2,tmax:t2}},grid:function(obj,l,t){var self=this;var json={left:l,top:t};if($.isArray(self.options.grid)&&self.options.grid.length==2){var gx=self.options.grid[0];var gy=self.options.grid[1];json.left=Math.floor((l+gx/2)/gx)*gx;json.top=Math.floor((t+gy/2)/gy)*gy;return json}else if(self.options.grid==null){return json}else{console.log("grid参数传递格式错误");return false}},findNearest:function(obj){var self=this;var iMin=new Date().getTime();var iMinIndex=-1;var ele=self.ele;for(var i=0;i<ele.length;i++){if(obj==ele[i]){continue;}
+if(self.collTest(obj,ele[i])){var dis=self.getDis(obj,ele[i]);if(dis<iMin){iMin=dis;iMinIndex=i;}}}
+if(iMinIndex==-1){return null;}else{return ele[iMinIndex];}},getDis:function(obj,obj2){var self=this;var l1=obj.offsetLeft+obj.offsetWidth/2;var l2=obj2.offsetLeft+obj2.offsetWidth/2;var t1=obj.offsetTop+obj.offsetHeight/2;var t2=obj2.offsetTop+obj2.offsetHeight/2;var a=l2-l1;var b=t1-t2;return Math.sqrt(a*a+b*b);},collTest:function(obj,obj2){var self=this;var l1=obj.offsetLeft;var r1=obj.offsetLeft+obj.offsetWidth;var t1=obj.offsetTop;var b1=obj.offsetTop+obj.offsetHeight;var l2=obj2.offsetLeft;var r2=obj2.offsetLeft+obj2.offsetWidth;var t2=obj2.offsetTop;var b2=obj2.offsetTop+obj2.offsetHeight;if(r1<l2||r2<l1||t2>b1||b2<t1){return false;}else{return true;}},pack:function(ele,click){var self=this;self.toDisable();if(self.options.pos==false){for(var i=0;i<ele.length;i++){$(ele[i]).css("position","absolute");$(ele[i]).css("margin","0");self.init(ele[i]);}}else if(self.options.pos==true){var arr=[];if(self.options.random||click){while(arr.length<ele.length){var n=self.rnd(0,ele.length);if(!self.finInArr(arr,n)){arr.push(n);}}}
+if(self.options.random==false||click!=true){var n=0;while(arr.length<ele.length){arr.push(n);n++}}
+if(self.firstRandom==false){var sortarr=[];var n=0;while(sortarr.length<ele.length){sortarr.push(n);n++}
+for(var i=0;i<ele.length;i++){$(ele[i]).attr("index",sortarr[i]);$(ele[i]).css("left",self.aPos[sortarr[i]].left);$(ele[i]).css("top",self.aPos[sortarr[i]].top);}}
+self.aPos=[];if(self.firstRandom==false){for(var j=0;j<ele.length;j++){self.aPos[j]={left:ele[$(ele).eq(j).attr("index")].offsetLeft,top:ele[$(ele).eq(j).attr("index")].offsetTop};}}else{for(var j=0;j<ele.length;j++){self.aPos[j]={left:ele[j].offsetLeft,top:ele[j].offsetTop};}}
+for(var i=0;i<ele.length;i++){$(ele[i]).attr("index",arr[i]);$(ele[i]).css("left",self.aPos[arr[i]].left);$(ele[i]).css("top",self.aPos[arr[i]].top);$(ele[i]).css("position","absolute");$(ele[i]).css("margin","0");self.init(ele[i]);}
+self.firstRandom=false;}},moveAddClass:function(obj){var self=this;var oNear=self.findNearest(obj);$(self.$element).removeClass(self.options.moveClass);if(oNear&&$(oNear).hasClass(self.options.moveClass)==false){$(oNear).addClass(self.options.moveClass);}},sort:function(){var self=this;var arr_li=[];for(var s=0;s<self.$element.length;s++){arr_li.push(self.$element[s]);}
+for(var i=0;i<arr_li.length;i++){for(var j=i+1;j<arr_li.length;j++){if(Number($(arr_li[i]).attr("index"))>Number($(arr_li[j]).attr("index"))){var temp=arr_li[i];arr_li[i]=arr_li[j];arr_li[j]=temp;}}}
+return arr_li;},pointDrag:function(obj){var self=this;var oNear=self.findNearest(obj);if(oNear){self.animation(obj,self.aPos[$(oNear).attr("index")]);self.animation(oNear,self.aPos[$(obj).attr("index")]);var tmp;tmp=$(obj).attr("index");$(obj).attr("index",$(oNear).attr("index"));$(oNear).attr("index",tmp);$(oNear).removeClass(self.options.moveClass);}else if(self.options.changeWhen=="end"){self.animation(obj,self.aPos[$(obj).attr("index")]);}},sortDrag:function(obj){var self=this;var arr_li=self.sort();var oNear=self.findNearest(obj);if(oNear){if(Number($(oNear).attr("index"))>Number($(obj).attr("index"))){var obj_tmp=Number($(obj).attr("index"));$(obj).attr("index",Number($(oNear).attr("index"))+1);for(var i=obj_tmp;i<Number($(oNear).attr("index"))+1;i++){self.animation(arr_li[i],self.aPos[i-1]);self.animation(obj,self.aPos[$(oNear).attr("index")]);$(arr_li[i]).removeClass(self.options.moveClass);$(arr_li[i]).attr("index",Number($(arr_li[i]).attr("index"))-1);}}else if(Number($(obj).attr("index"))>Number($(oNear).attr("index"))){var obj_tmp=Number($(obj).attr("index"));$(obj).attr("index",$(oNear).attr("index"));for(var i=Number($(oNear).attr("index"));i<obj_tmp;i++){self.animation(arr_li[i],self.aPos[i+1]);self.animation(obj,self.aPos[Number($(obj).attr("index"))]);$(arr_li[i]).removeClass(self.options.moveClass);$(arr_li[i]).attr("index",Number($(arr_li[i]).attr("index"))+1);}}}else{self.animation(obj,self.aPos[$(obj).attr("index")]);}},animation:function(obj,json){var self=this;var options=self.options.animation_options;var self=this;var count=Math.round(options.duration/30);var start={};var dis={};for(var name in json){start[name]=parseFloat(self.getStyle(obj,name));if(isNaN(start[name])){switch(name){case 'left':start[name]=obj.offsetLeft;break;case 'top':start[name]=obj.offsetTop;break;case 'width':start[name]=obj.offsetWidth;break;case 'height':start[name]=obj.offsetHeight;break;case 'marginLeft':start[name]=obj.offsetLeft;break;case 'borderWidth':start[name]=0;break;}}
+dis[name]=json[name]-start[name];}
+var n=0;clearInterval(obj.timer);obj.timer=setInterval(function(){n++;for(var name in json){switch(options.easing){case 'linear':var a=n/count;var cur=start[name]+dis[name]*a;break;case 'ease-in':var a=n/count;var cur=start[name]+dis[name]*a*a*a;break;case 'ease-out':var a=1-n/count;var cur=start[name]+dis[name]*(1-a*a*a);break;}
+if(name=='opacity'){obj.style.opacity=cur;obj.style.filter='alpha(opacity:'+cur*100+')';}else{obj.style[name]=cur+'px';}}
+if(n==count){clearInterval(obj.timer);options.complete&&options.complete();}},30);},getStyle:function(obj,name){return(obj.currentStyle||getComputedStyle(obj,false))[name];},rnd:function(n,m){return parseInt(Math.random()*(m-n)+n);},finInArr:function(arr,n){for(var i=0;i<arr.length;i++){if(arr[i]==n){return true;}}
+return false;}}})})(Zepto,window,document);
+
+
+
 (function() {
-    'use strict';
-    // 圆形模块，固定位置。在没有检测到video元素之前，是灰色不可用状态。
-    // 检测到video元素之后，显示为绿色或者黄色 。鼠标划到模块上面的时候，透明度变为0.平时透明度是0.3左右。
-    // 鼠标划到元素上面的时候，菜单展开。有四个按钮以及一个输入框。
-    // 输入框分别是加速、减速、回复正常速度、快进5秒，快退5秒、还有一个输入框。是可以直接输入播放速度的。
-    // 后期可以考虑加一个滑块。但是，毕竟滑块不太好用。所以，目前来说，还是用点击，同时手机版，也可以支持 ontab 事件
-    // 鼠标移出元素之后，又恢复一个圆形。圆形里面的文字是目前设置的播放速度。
-    // 这个播放速度，要储存在脚本存储里面。这样不用每次打开新的视频都要再调一次速度。
-    // 另外一点，刚刚开始的 时候 ，要持续一段时间检测文档的状态。如果一段时间都没有找到Video元素的话。就 把元素 移除。不要占着位置。
-    // 又或者，在没有检测 到video元素之前，不要显示功能模块。检测到之后，也就是准备好之后，再显示不迟。
-    // 还有还有，这个东西需要支持拖拽。所以，我是允许你引入jquery的。如果不用引入，那当然最好。但是引入也没有太多意见。
-    // 拖拽到的 位置也要记录存储下来。
+  'use strict';
+  // 检测到video元素之后，显示为绿色或者黄色 。鼠标划到模块上面的时候，透明度变为0.平时透明度是0.3左右。
+  // 另外一点，刚刚开始的 时候 ，要持续一段时间检测文档的状态。如果一段时间都没有找到Video元素的话。就 把元素 移除。不要占着位置。
+  // 又或者，在没有检测 到video元素之前，不要显示功能模块。检测到之后，也就是准备好之后，再显示不迟。
+  /**
+   * ░░░░░░░░░░░░░░░░░░░░░░░░▄░░
+   * ░░░░░░░░░▐█░░░░░░░░░░░▄▀▒▌░
+   * ░░░░░░░░▐▀▒█░░░░░░░░▄▀▒▒▒▐
+   * ░░░░░░░▐▄▀▒▒▀▀▀▀▄▄▄▀▒▒▒▒▒▐
+   * ░░░░░▄▄▀▒░▒▒▒▒▒▒▒▒▒█▒▒▄█▒▐
+   * ░░░▄▀▒▒▒░░░▒▒▒░░░▒▒▒▀██▀▒▌
+   * ░░▐▒▒▒▄▄▒▒▒▒░░░▒▒▒▒▒▒▒▀▄▒▒
+   * ░░▌░░▌█▀▒▒▒▒▒▄▀█▄▒▒▒▒▒▒▒█▒▐
+   * ░▐░░░▒▒▒▒▒▒▒▒▌██▀▒▒░░░▒▒▒▀▄
+   * ░▌░▒▄██▄▒▒▒▒▒▒▒▒▒░░░░░░▒▒▒▒
+   * ▀▒▀▐▄█▄█▌▄░▀▒▒░░░░░░░░░░▒▒▒
+   * 单身狗就这样默默地看着你，一句话也不说。
+   */
+  // 未完善： 优酷等网站，视频是分段加载的，刚开始设置好了速率，但是再播放一段，就又恢复原来的速度了。需要启动另外一个周期计时器，不断检测播放速率。
+  // 目前腾讯视频没有这个问题
 
-    /*
-    一些考虑 为什么我原本有调整播放时间的选项，但是后面直接去掉了呢。因为一般视频网站，肯定会提供调整播放时间的功能的。
-    在播放时间调整上面，已经是非常完善了。所以我再加上这个功能意义不大。况且也没有办法知道大多数人的使用习惯。所以还是砍掉这个功能吧。
-    专心做播放速度的调整就好。
-
-    */
   var SpeedyPlay = (function(){
     let O = {
-      "speedIcon": '<svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="689"><path d="M977.51 218.317c-19.456-15.975-47.923-13.107-63.897 6.349l-0.615 0.819C855.04 296.55 788.07 340.378 734.003 342.835c-35.02 1.434-67.379-13.517-98.713-45.67-60.212-63.898-127.386-94.823-199.476-91.546-131.072 5.94-225.894 125.133-229.785 130.253-15.565 19.66-12.083 48.333 7.782 63.693 19.661 15.36 48.333 12.083 63.693-7.783 0.614-0.819 73.933-91.545 162.406-95.436 24.372-1.024 47.924 4.505 71.066 16.793L376.013 609.28c-104.243 141.926-268.698 62.464-276.07 58.778-22.324-11.264-49.562-2.253-60.826 20.07s-2.458 49.766 19.865 61.03c2.458 1.23 62.055 31.13 139.674 34.816 5.12 0.205 10.24 0.41 15.565 0.41 69.222 0 159.334-22.118 230.605-115.712l32.358 16.794 30.515 15.974 4.096 2.253c19.251 10.24 48.947 28.057 80.691 55.091 71.066 60.826 118.17 137.42 139.879 227.738 5.12 20.89 23.552 34.816 44.032 34.816 3.481 0 7.168-0.41 10.65-1.23 24.37-5.938 39.321-30.514 33.587-54.886-49.972-207.462-199.476-306.995-266.036-342.016L660.89 421.683c21.708 7.987 44.85 12.083 67.993 12.083 2.867 0 5.94 0 8.807-0.204 110.592-4.71 201.318-96.256 245.555-150.528l0.614-0.615c15.975-19.66 13.107-48.333-6.349-64.102z" p-id="690"></path><path d="M585.933 120.218c0 41.37 22.118 79.872 57.958 100.556 35.84 20.685 80.077 20.685 116.122 0 35.84-20.684 57.958-58.982 57.958-100.556S795.853 40.346 760.013 19.66c-35.84-20.685-80.077-20.685-116.122 0-35.84 20.685-57.958 58.982-57.958 100.557z m0 0" p-id="691"></path></svg>',
       "CSS": `
         /* 禁止选中文字 */
         .noselect {
@@ -50,16 +88,62 @@
           user-select: none; /* Non-prefixed version, currentlynot supported by any browser */
         }
        /* 调速框样式 */ 
-        #speedDiv{position:fixed; top:500px; left: 100px;z-index:999999; overflow:hidden; width:55px;  padding:5px; border:1px solid #999; border-radius:50px; display:flex;justify-content:flex-start;align-items:center; opacity:0.4;}
-        #speedDiv:hover,#speedDiv:focus,#speedDiv:active{width:auto; padding-right:15px; animation:show 0.2s; -moz-animation:show 0.2s; -webkit-animation:show 0.2s; -o-animation:show 0.2s; opacity:1;}
-        @keyframes show {0% {width:70px;} 100% {width:280px;}}
-        @-moz-keyframes show {0% {width:70px;} 100% {width:280px;}}
-        @-webkit-keyframes show {0% {width:70px;} 100% {width:280px;}}
-        @-o-keyframes show {0% {width:70px;} 100% {width:280px;}}
-        #speedDiv span,#speedDiv input{font-size:2em; font-weight:bolder; background: #FF0;display:flex;flex-shrink:0; align-items:center;}
-        #speedDiv input[type='text']{cursor:move;}
-        #speedDiv input{width:50px; height:50px; border-radius:35px; display:inline-block; text-align:center; border:3px solid #333; margin-right: 5px; }
-        #speedDiv span{ padding:5px; margin:2px; border-radius:5px; cursor:pointer;}
+        #speedDiv{
+          position:fixed;
+          top:500px;
+          left: 100px;
+          z-index:999999;
+          overflow:hidden;
+          width:50px;
+          padding:5px; border:1px solid #999;
+          border-radius:50px;
+          display:grid;
+          grid-template-columns: 50px 50px 300px 50px;
+          grid-template-rows: 50px;
+          grid-column-gap: 5px;
+          justify-content:flex-start;
+          align-items:center;
+          opacity:0.4;
+        }
+        #speedDiv:hover,#speedDiv:focus,#speedDiv:active{
+          width:auto;
+          padding-right:15px;
+          opacity:1;
+        }
+        #speedDiv span,#speedDiv input,.speedText{
+          font-weight: bolder;
+          background: #FF0;
+          display: grid;
+          text-align: center;
+        }
+        #speedDiv .speedText{
+          height: 50px;
+          width: 50px;
+          line-height: 50px;
+          vertical-align: middle; /*必须设置 line-height, 这个才可用*/
+          font-size: 30px;
+          border-radius: 50px;
+          cursor:move;
+        }
+        #speedDiv span[name='slowDown']{
+          transform: rotateY(180deg);
+        }
+        #speedDiv input{
+          width:50px;
+          height:50px;
+          border-radius:35px;
+          display:inline-block;
+          text-align:center;
+          border:3px solid #333;
+          margin-right: 5px;
+        }
+        #speedDiv span{
+          font-size: 35px;
+          height: 50px;
+          width: 50px;
+          border-radius:5px;
+          cursor:pointer;
+        }
 
         /*横条样式*/
         #speedDiv input[type='range']{
@@ -81,23 +165,64 @@
           cursor: pointer;
         }`,
     };
+
     O.speedDivOuterHTML = `
-      <div id="speedDiv" onselectstart="return false" class="noselect" unselectable="on">
-        <input id="speedInput" type="text" maxlenth="4" v-model.number="speed" @change="changeSpeed" disabled="editable"
-        draggable="true" @dragstart="moveStart" @touchstart="moveStart" @drag="move" @touchmove="move" />
-        <span name="slowDown" @click.prevent="slowDown">${O.speedIcon}-</span>
+      <div id="speedDiv" class="noselect" unselectable="on">
+        <b class="speedText" @dblclick="resetSpeed"><center>{{speed}}</center></b>
+        <span name="slowDown" @click.prevent="slowDown">♞</span>
         <input type="range" v-model.number="speed" min=0 max=10 :step=0.1 @input="changeRange" 
         :style="backgroundSize()"/>
-        <span name="speedUp" @click.prevent="speedUp">${O.speedIcon}+</span>
+        <span name="speedUp" @click.prevent="speedUp">✈</span>
       </div>
     `;
 
+    // 获取当前站点取得名称
+    O.getSiteName = function(){
+      return location.host.replace(/\./g, '');
+    };
+
+    O.getSiteSpeed = function(){
+      let speedCollete = GM_getValue('speedCollete', {});
+      let siteName = O.getSiteName();
+      return speedCollete.hasOwnProperty(siteName) ? speedCollete[siteName] : 1.0;
+    };
+
+    O.getSitePosition = function(){
+      let positionCollect = GM_getValue('positionCollect', {});
+      let siteName = O.getSiteName();
+      return positionCollect.hasOwnProperty(siteName) ? positionCollect[siteName] : {left: 50, top: 100};
+    };
+
     // 根据不同的网站，设置不同的速度。存储键名用 location.host 字母来拼接
+    // 还有设置不同的位置
     // 按照不同频道读取各自的播放速度，未完成
-    // O.saveSpeed = function(){
-    //   let hostKey = location.host.replace(".",'') || "unknow";
-    //   // GM_setValue("GM_speeDiv_")
-    // };
+    O.saveSpeed = function(speed){
+      if(typeof speed != 'number'){
+        O.log(`速度值设置错误，应该提供数值类型，${speed} 是 ${typeof speed} 类型！`, 'error');
+        return false;
+      }
+      let speedCollete = GM_getValue('speedCollete', {});
+      let siteName = O.getSiteName();
+      speedCollete[siteName] = speed;
+      GM_setValue('speedCollete', speedCollete);
+      return true;
+    };
+
+    O.savePosition = function(left, top){
+      if(typeof left != 'number' || typeof top != 'number'){
+        O.log(`位置值设置错误，应该提供数值类型，现在 left:${typeof left}，top: ${typeof top}`, 'error');
+        return false;
+      }
+      let positionCollect = GM_getValue('positionCollect', {});
+      let siteName = O.getSiteName();
+      positionCollect[siteName] = {
+        left: left,
+        top: top
+      };
+      GM_setValue('positionCollect', positionCollect);
+      O.log(left+'--'+top);
+      return true;
+    };
     
     O.log = function(message,msgType="normal"){
       let style = {
@@ -113,20 +238,29 @@
     // window.sessionStorage.setItem("playbackRate", Math.min(videoRate, 4.0));
     O.showUp = function(){
       GM_addStyle(O.CSS);
-      let speedDiv = document.createElement("Div");
-      document.body.appendChild(speedDiv);
-      speedDiv.outerHTML = O.speedDivOuterHTML;
-      let GM_speedDiv_position = GM_getValue("GM_speedDiv_position",{left:100,top:500});
-      speedDiv = document.querySelector("#speedDiv");
-      speedDiv.setAttribute("style",`left:${GM_speedDiv_position.left}px; top: ${GM_speedDiv_position.top}px;`);
+      $('body').first().before(O.speedDivOuterHTML);
+      setTimeout(()=>{
+        $('#speedDiv').Tdrag({
+          handle:".speedText",
+          // 拖拽结束后调用
+          cbEnd: ()=>{
+            O.savePosition(parseInt($('#speedDiv').css('left')), parseInt($('#speedDiv').css('top')));
+          }
+        });
+      }, 600);
+      
+      let speedDiv = $('#speedDiv');
+
+      let speedDivPosition = O.getSitePosition();
+      speedDiv.css({
+        'left': speedDivPosition.left+'px',
+        'top': speedDivPosition.top+'px'
+      });
 
       O.speedVue = new Vue({
         el: "#speedDiv",
         data: {
-          speed: GM_getValue("speed", 1.0),
-          editable: false,
-          dx: 0,
-          dy: 0
+          speed: O.getSiteSpeed(),
         },
         methods: {
           slowDown: function(){
@@ -139,8 +273,13 @@
             this.speed = speed <= 10 ? speed :10;
             this.changeSpeed();
           },
+          resetSpeed: function(){
+            this.speed = 1;
+            this.changeSpeed();
+          },
           changeSpeed: function(){
-            GM_setValue("speed", this.speed);
+            // GM_setValue("speed", this.speed);
+            O.saveSpeed(this.speed);
             // 这里默认只对第一个 video 元素进行调速。多 video 的页面暂时不考虑
             try {
               let videos = document.querySelectorAll("video");
@@ -157,31 +296,12 @@
             }
           },
           changeRange: function(){
-            GM_setValue("speed", this.speed);
+            // GM_setValue("speed", this.speed);
+            O.saveSpeed(this.speed);
             this.changeSpeed();
           },
           backgroundSize: function(){
             return `background-size:${this.speed*10}% 100%`;
-          },
-          moveStart: function(e){
-            console.log(e);
-            // 这里要增加对移动端的支持。主要解决 touchList touch的clientx,clientY的问题
-            let dad = e.target.parentElement;
-            this.dx = e.clientX - dad.offsetLeft;
-            this.dy = e.clientY - dad.offsetTop;
-          },
-          move: function(e){
-            console.log(e);
-            // 这里要增加对移动端的支持。主要解决 touchList touch的clientx,clientY的问题
-            let dad = e.target.parentElement;
-            if(e.clientX && e.clientY){
-              dad.style.left = e.clientX - this.dx + "px";
-              dad.style.top  = e.clientY - this.dy + "px";
-              GM_setValue("GM_speedDiv_position",{
-                left: e.clientX - this.dx,
-                top: e.clientY - this.dy
-              })
-            }
           },
         }
       });
@@ -191,17 +311,14 @@
       // 腾讯视频，最高4.0 倍速度，需要通过设置 sessionStorage 值来改变。目前没有找到直接操作的方法
       let videos = document.querySelectorAll("video");
       // 按照不同频道读取各自的播放速度，未完成
-      // let hostKey = location.host.replace(".",'') || "unknow";
-      // console.log(hostKey);
-      // let videoRate = GM_getValue(hostKey, 1.0);
-      let videoRate = GM_getValue("speed", 1.0);
+      let videoRate = O.getSiteSpeed();
       if(location.host == "v.qq.com"){
         window.sessionStorage.setItem("playbackRate", Math.min(videoRate, 4.0));
       }else{
         videos.forEach((vdo)=>{vdo.playbackRate = videoRate;});
       }
       O.log(videos[0].playbackRate);      
-    }
+    };
 
     // 检测页面是否有 video 元素，如果有，并且可以设置 video.playbackRate 属性，那么就出现速度框，否则就不显示。
     // 循环检测 30s ，如果都没有找到 video 元素，那就不再检测了
@@ -218,7 +335,7 @@
         }else{
           O.log('waiting...');
           checkVideoCounter ++;
-        };
+        }
       },1000);
     };
 
