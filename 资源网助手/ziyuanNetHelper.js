@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         资源网助手
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      2.0
+// @version      2.1
 // @description  最大资源网、172资源网、1977资源网、ok资源网、高清电影资源站、永久资源网、酷云资源、酷播资源网、非凡资源网[MP4][m3u8]视频直接播放，分类页面改进翻页功能。
 // @author       黄盐
 // 影视作品介绍页面
@@ -41,22 +41,30 @@ GM_addStyle(`
     span[data-url]{display:none}
     span[data-url*=m3u8],span[data-url*=mp4]{display:inline-block}
     table a{font-family:"微软雅黑"}
-    table a:hover{background:orange;box-shadow:0 0 5px 5px orange}
     #playerContainer{width:60%;position:fixed;top:10em;z-index:9000;right:0}
-    #playerControls{position:relative;top:0;text-align:right;z-index:10000;height:0}
-    #playerControls i{display:inline-block;max-height:40px;width:30px;padding:2px 5px;margin-left:5px;color:#fff;text-align:center}
+    #playerControls{position:relative;top:0;text-align:right;z-index:10000;height:0;}
+    #playerControls i{display:inline-block;max-height:40px;width:25px;padding:2px 5px;margin-left:5px;color:#fff;text-align:center}
     #playerControls i:hover{cursor:pointer;background:#ffff0080}
   `);
 GM_addStyle(GM_getResourceText("playercss"));
 
 z = Zepto;
+let tempElement, tempText;
 // 链接转化，添加播放按钮
-z('input[name=copy_yah]').forEach(element => {
+z('input[name*=copy_]').forEach(element => {
    // 链接转化为真链接
-   z(element).parent().find('a').attr({
-      href: z(element).val(),
-      target: '_blank'
-   }).after(`<span class="zPlayButton" data-url='${z(element).val()}'>▶</span>`);
+   if(z(element).parent().find('a').length){
+      // 有 <a> 元素的情况
+      z(element).parent().find('a').attr({
+         href: z(element).val(),
+         target: '_blank'
+      }).after(`<span class="zPlayButton" data-url='${z(element).val()}'>▶</span>`);
+   }else{
+      // 没有 <a> 元素的情况
+      tempElement = element; tempText = z(element).parent().text(); 
+      z(element).parent().empty().append(tempElement).append(`<a href="${z(tempElement).val()}" target="_blank">${tempText}</a>`)
+      .append(`<span class="zPlayButton" data-url='${z(tempElement).val()}'>▶</span>`);
+   }
 });
 
 // 页面添加播放器，按需初始化
