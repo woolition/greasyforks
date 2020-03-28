@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         去哪儿弹窗改通知(商家版)
-// @namespace    http://tampermonkey.net/
-// @@updateURL    http://tampermonkey.net/
+// @namespace    https://github.com/woolition/greasyforks
+// @@updateURL   https://github.com/woolition/greasyforks/raw/master/qunar/alert2Notification/alert2Notification.user.js
 // @version      0.1
 // @description  去哪儿商家后台，警告弹窗改通知形式
 // @author       黄盐
