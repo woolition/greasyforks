@@ -2,10 +2,10 @@
 // @name         去哪儿弹窗改通知(商家版)
 // @namespace    https://github.com/woolition/greasyforks
 // @@updateURL   https://github.com/woolition/greasyforks/raw/master/qunar/alert2Notification/alert2Notification.user.js
-// @version      0.2
+// @version      0.3
 // @description  去哪儿商家后台，警告弹窗改通知形式
 // @author       黄盐
-// @match        https://tb2cadmin.qunar.com/supplier/product/teamPricePackage.qunar?pId=*&tId=*
+// @match        https://tb2cadmin.qunar.com/supplier/product/teamPricePackage.qunar?*Id=*&*Id=*
 // @run-at       document-end
 // @grant        GM_notification
 // @grant        unsafeWindow
