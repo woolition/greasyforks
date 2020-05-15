@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         资源网助手
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      2.4
+// @version      2.5
 // @description  最大资源网、172资源网、1977资源网、ok资源网、高清电影资源站、永久资源网、酷云资源、酷播资源网、非凡资源网[MP4][m3u8]视频直接播放，分类页面改进翻页功能。
 // @author       黄盐
 // 影视作品介绍页面
@@ -33,41 +33,42 @@
     span[data-url]{display:none}
     span[data-url*=m3u8],span[data-url*=mp4]{display:inline-block}
     table a{font-family:"微软雅黑"}
-    #playerContainer{width:60%;position:fixed;display:block;z-index:9000;right:0;top:5em}
+    #playerContainer{width:60%;position:fixed;display:block;z-index:9000;right:0;top:5em;}
     #playerControls{position:absolute;width:100%;cursor:move;top:0;z-index:10000;visibility:hidden;}
     #playerContainer:hover #playerControls{visibility:visible;}
     #playerControls i{display:inline-block;max-height:40px;width:25px;padding:2px 5px;margin-left:5px;color:#fff;text-align:center;font-size: 16px;cursor:pointer;background:#ffff0080}
     #playerControls i:hover{color:red}
+    #playerTitle{margin-left:10px;color:cyan}
   `);
   GM_addStyle(GM_getResourceText("playercss"));
 
   let tempElement, tempText;
   // 链接转化，添加播放按钮
-  Zepto('input[name*=copy_]').forEach(element => {
+  Zepto('input[name*=copy_]').forEach(elm => {
     // 链接转化为真链接
-    if (Zepto(element).parent().find('a').length) {
+    if (Zepto(elm).parent().find('a').length) {
       // 有 <a> 元素的情况
-      Zepto(element).parent().find('a').attr({
-        href: Zepto(element).val(),
+      Zepto(elm).parent().find('a').attr({
+        href: Zepto(elm).val(),
         target: '_blank'
-      }).after(`<span class="zPlayButton" data-url='${Zepto(element).val()}'>▶</span>`);
+      }).after(`<span class="zPlayButton" data-url='${Zepto(elm).val()}'>▶</span>`);
     } else {
       // 没有 <a> 元素的情况
-      tempElement = element; tempText = Zepto(element).parent().text();
-      Zepto(element).parent().empty().append(tempElement).append(`<a href="${Zepto(tempElement).val()}" target="_blank">${tempText}</a>`)
+      tempElement = elm; tempText = Zepto(elm).parent().text();
+      Zepto(elm).parent().empty().append(tempElement).append(`<a href="${Zepto(tempElement).val()}" target="_blank">${tempText}</a>`)
         .append(`<span class="zPlayButton" data-url='${Zepto(tempElement).val()}'>▶</span>`);
     }
   });
   // 元素全屏
-  function fullScreen(elem) {
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.webkitRequestFullScreen) {
-      elem.webkitRequestFullScreen();
-    } else if (elem.mozRequestFullScreen) {
-      elem.mozRequestFullScreen();
+  function fullScreen(elm) {
+    if (elm.requestFullscreen) {
+      elm.requestFullscreen();
+    } else if (elm.webkitRequestFullScreen) {
+      elm.webkitRequestFullScreen();
+    } else if (elm.mozRequestFullScreen) {
+      elm.mozRequestFullScreen();
     } else {
-      elem.msRequestFullscreen();
+      elm.msRequestFullscreen();
     }
   }
   // 播放器拖动位置
@@ -82,7 +83,8 @@
       Zepto(div).css({ left: left + 'px', top: top + 'px' });
     };
     document.onmouseup = (e) => {
-      GM_setValue('position', { left: left, top: top });
+      // 在left或者top有值才更新
+      if(left&&top){GM_setValue('position', { left: left, top: top })}
       document.onmousemove = null;
       document.onmouseup = null;
     };
@@ -127,7 +129,8 @@
           fullScreen(Zepto('#playerContainer')[0]);
           break;
         case 'close':
-          unsafeWindow.dp.switchVideo({ url: '' });
+          unsafeWindow.dp.switchVideo({ url: '' }); // 不用 dp.destroy(), 免得重新渲染
+          setTimeout(() => {unsafeWindow.dp.notice('关闭', 100)}, 100); // 避免出现“视频加载失败”
           unsafeWindow.dp.pause();
           Zepto('#playerContainer').hide();
           break;
@@ -136,7 +139,6 @@
       }
     }
     let position = GM_getValue('position', { left: 200, top: 100 });
-    if(!position.hasOwnProperty('left')){position={ left: 200, top: 100 }}
     Zepto('#playerContainer').css({ left: position.left + 'px', top: position.top + 'px' });
     Zepto("#playerControls").on('mousedown', move);
     Zepto('#playerControls i').on('click', (e) => { spanClick(e); });
