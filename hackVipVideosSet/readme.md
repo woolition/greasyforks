@@ -24,7 +24,9 @@
 ### 新版本有Bug?
 
 **新版本的非常不好用怎么办(◔ ‸◔)**
+
 ☛ [反馈给我](https://greasyfork.org/zh-CN/scripts/27530/feedback)
+
 ☛ [访问我的GitHub](https://github.com/woolition/greasyforks/tree/master/hackVipVideosSet) → 找到最近的历史版本 → 点击进入代码页面 → 点击[Raw]按钮安装旧版本。先恢复使用，等稳定了再升级。
 
 ### 使用方法(◔ ‸◔)？
@@ -48,7 +50,10 @@
 
 ##### 我的API优先 & 管理API
 
-  工具提供了管理API的功能。 在 **☑菜单** 点击 **管理API**， 打开 API 编辑面板
+  工具提供了管理API的功能。 
+  
+  在 **☑菜单** 点击 **管理API**， 打开 API 编辑面板
+  
   上面部分是 **默认API**，下面是 **我的API**。
 
   如果想要让 **我的API** 排在前面，可以在 **☑菜单** 勾选 **☑我的API优先**
