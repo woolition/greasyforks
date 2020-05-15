@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         资源网助手
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      2.3
+// @version      2.4
 // @description  最大资源网、172资源网、1977资源网、ok资源网、高清电影资源站、永久资源网、酷云资源、酷播资源网、非凡资源网[MP4][m3u8]视频直接播放，分类页面改进翻页功能。
 // @author       黄盐
 // 影视作品介绍页面
@@ -33,7 +33,7 @@
     span[data-url]{display:none}
     span[data-url*=m3u8],span[data-url*=mp4]{display:inline-block}
     table a{font-family:"微软雅黑"}
-    #playerContainer{width:60%;position:fixed;display:block;z-index:9000;right:0;}
+    #playerContainer{width:60%;position:fixed;display:block;z-index:9000;right:0;top:5em}
     #playerControls{position:absolute;width:100%;cursor:move;top:0;z-index:10000;visibility:hidden;}
     #playerContainer:hover #playerControls{visibility:visible;}
     #playerControls i{display:inline-block;max-height:40px;width:25px;padding:2px 5px;margin-left:5px;color:#fff;text-align:center;font-size: 16px;cursor:pointer;background:#ffff0080}
@@ -136,7 +136,7 @@
       }
     }
     let position = GM_getValue('position', { left: 200, top: 100 });
-    if(position=={}){position={ left: 200, top: 100 }}
+    if(!position.hasOwnProperty('left')){position={ left: 200, top: 100 }}
     Zepto('#playerContainer').css({ left: position.left + 'px', top: position.top + 'px' });
     Zepto("#playerControls").on('mousedown', move);
     Zepto('#playerControls i').on('click', (e) => { spanClick(e); });
