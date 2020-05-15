@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         资源网助手
 // @namespace    https://greasyfork.org/zh-CN/users/104201
-// @version      2.2
+// @version      2.3
 // @description  最大资源网、172资源网、1977资源网、ok资源网、高清电影资源站、永久资源网、酷云资源、酷播资源网、非凡资源网[MP4][m3u8]视频直接播放，分类页面改进翻页功能。
 // @author       黄盐
 // 影视作品介绍页面
@@ -99,6 +99,7 @@
           <i data-size="big">🗖</i>
           <i data-size="full">🡧🡥</i>
           <i data-size="close">🗙</i>
+          <b id="playerTitle"></b>
         </div>
         <div id="zplayer"></div>
       </div>`);
@@ -135,6 +136,7 @@
       }
     }
     let position = GM_getValue('position', { left: 200, top: 100 });
+    if(position=={}){position={ left: 200, top: 100 }}
     Zepto('#playerContainer').css({ left: position.left + 'px', top: position.top + 'px' });
     Zepto("#playerControls").on('mousedown', move);
     Zepto('#playerControls i').on('click', (e) => { spanClick(e); });
@@ -146,6 +148,11 @@
     // 还没有播放器的话，就初始化
     if (unsafeWindow.dp == undefined) { initPlayer(); }
     $('#playerContainer').show();
+    let title = Zepto(e.target).prev().text().split('$')[0];
+    Zepto('#playerTitle').text(title);
+
+    console.log(title, "新视频地址：", e.target.dataset.url);  // 这一行不要删除
+
     unsafeWindow.dp.switchVideo({ url: e.target.dataset.url });
     unsafeWindow.dp.play();
   }
