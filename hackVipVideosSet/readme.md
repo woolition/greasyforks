@@ -8,6 +8,10 @@
 
 ☛ 删除脚本(清存储数据),再重新安装即可.
 
+### 本次更新 V 5.4  2020-7-15
+
++ 以前版本被傻逼管理人员[Jixun.Moe](https://greasyfork.org/zh-CN/users/44-jixun-moe)删了,只好出个新版，非压缩版本
+
 ### 本次更新 V 5.3  2020-5-15
 
 + 整体重构，引入 [Vue (v2.6.11)](https://cn.vuejs.org/v2/guide/), 使用更顺畅
