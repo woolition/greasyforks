@@ -2,7 +2,7 @@
 
 > (●￣(ｴ)￣●) づ Firefox用户: 推荐 [安装 Tampermonkey ](https://addons.mozilla.org/zh-CN/firefox/addon/tampermonkey/) 或者 [安装 ViolentMonkey ](https://addons.mozilla.org/zh-CN/firefox/addon/violentmonkey/)
 
-### 升级到V 5.3
+### 升级到V 5.4
 
 **新版本功能死活都用不了(◔ ‸◔) ?**
 
@@ -10,7 +10,7 @@
 
 ### 本次更新 V 5.4  2020-7-15
 
-+ 以前版本被傻逼管理人员[Jixun.Moe](https://greasyfork.org/zh-CN/users/44-jixun-moe)删了,只好出个新版，非压缩版本
++ 以前版本被删,只好出个新版，非压缩版本,功能还是同之前的。删除了一个失效的接口。
 
 ### 本次更新 V 5.3  2020-5-15
 
