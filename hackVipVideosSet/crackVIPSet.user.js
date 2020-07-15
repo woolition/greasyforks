@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name     破解VIP会员视频集合
 // @namespace  https://greasyfork.org/zh-CN/users/104201
-// @version    5.1
-// @description  2020-7-15 整合代码更新。一键破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。详细方法看说明和图片。包含了[懒人专用***放心使用。▶懒蛤蛤][【玩的嗨】VIP工具箱***Max zhang]的部分接口。[Tampermonkey | Violentmonkey | Greasymonkey 4.0+]
+// @version    5.4
+// @description  2020-7-16 整合代码更新。一键破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。详细方法看说明和图片。包含了[懒人专用***放心使用。▶懒蛤蛤][【玩的嗨】VIP工具箱***Max zhang]的部分接口。[Tampermonkey | Violentmonkey | Greasymonkey 4.0+]
 // @author     黄盐
 // require  https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @noframes
