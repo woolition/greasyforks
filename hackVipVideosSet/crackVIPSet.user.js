@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name     破解VIP会员视频集合
 // @namespace  https://greasyfork.org/zh-CN/users/104201
-// @version    5.41
+// @version    5.42
 // @description  2020-7-16 整合代码更新。一键破解[优酷|腾讯|乐视|爱奇艺|芒果|AB站|音悦台]等VIP或会员视频，解析接口贵精不贵多，绝对够用。详细方法看说明和图片。包含了[懒人专用***放心使用。▶懒蛤蛤][【玩的嗨】VIP工具箱***Max zhang]的部分接口。[Tampermonkey | Violentmonkey | Greasymonkey 4.0+]
 // @author     黄盐
 // require  https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
@@ -121,7 +121,7 @@ function getSetValueByName(name, defaultValue) {
 }
 
 /**
- * 破解 API，2020-8-20 更新，删除了跳转黄色链接的
+ * 破解 API，2020-9-3 更新，删除了跳转黄色链接的
  */
 const APIS = [
     { name: "组合解析", url: "http://kiwi8.top/mov/s?url=", title: "KIWI解析，组合型解析，站长会维护排名", intab: 0 },
@@ -141,7 +141,6 @@ const APIS = [
     { name: "人人发布", url: "http://v.renrenfabu.com/jiexi.php?url=", title: "综合，多线路", intab: 0 },
     { name: "二度解析", url: "https://jx.du2.cc/?url=", title: "手动点播放", intab: 1 },
     { name: "思古", url: "https://api.sigujx.com/?url=", title: "思古", intab: 1 },
-    { name: "人人", url: "https://vip.mpos.ren/v/?url=", title: "人人", intab: 1 },
     { name: "乐乐云", url: "https://660e.com/?url=", title: "乐乐云，未知效果", intab: 1 },
 ];
 
