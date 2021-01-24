@@ -2,7 +2,7 @@
 // @name         倍速播放
 // @namespace    https://gitee.com/yellownacl
 // @version      1.0
-// @description  HTML5播放器，倍速功能。可以实现最高20倍数播放。不同网站可以设置不同速率和位置。极速跳过广告
+// @description  HTML5播放器，倍速|最高10倍|计时器掌控者|视频跳过广告|视频广告加速
 // @author       黄盐
 // @include      *:*
 // @grant        none
